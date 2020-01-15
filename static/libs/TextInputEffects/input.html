@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/set1.css" />
+	</head>
+	<body>
+
+			<section>
+				<span class="input input--haruki">
+					<input class="input__field input__field--haruki" type="text" id="input-1" />
+					<label class="input__label input__label--haruki" for="input-1">
+						<span class="input__label-content input__label-content--haruki">Latitude</span>
+					</label>
+				</span>
+			</section>
+			
+
+		<script src="js/classie.js"></script>
+		<script>
+			(function() {				
+				if (!String.prototype.trim) {
+					(function() {
+						// Make sure we trim BOM and NBSP
+						var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+						String.prototype.trim = function() {
+							return this.replace(rtrim, '');
+						};
+					})();
+				}
+
+				[].slice.call( document.querySelectorAll( 'input.input__field' ) ).forEach( function( inputEl ) {
+					// in case the input is already filled..
+					if( inputEl.value.trim() !== '' ) {
+						classie.add( inputEl.parentNode, 'input--filled' );
+					}
+
+					// events:
+					inputEl.addEventListener( 'focus', onInputFocus );
+					inputEl.addEventListener( 'blur', onInputBlur );
+				} );
+
+				function onInputFocus( ev ) {
+					classie.add( ev.target.parentNode, 'input--filled' );
+				}
+
+				function onInputBlur( ev ) {
+					if( ev.target.value.trim() === '' ) {
+						classie.remove( ev.target.parentNode, 'input--filled' );
+					}
+				}
+			})();
+		</script>
+	</body>
+</html>

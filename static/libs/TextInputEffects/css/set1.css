@@ -1,0 +1,185 @@
+.input {
+	position: relative;
+	z-index: 1;
+	display: inline-block;
+	margin: 1em;
+	max-width: 200px;
+	width: calc(100% - 2em); height:50px;
+	vertical-align: top;
+}
+
+.input__field {
+	position: relative;
+	display: block;
+	float: right;
+	padding: 0.6em;
+	width: 60%;
+	border: none;
+	border-radius: 0; font:inherit;
+	background: #9d9d9d;
+	color: #101010; 
+	font-weight: bold; font-size: 14px;
+	-webkit-appearance: none; /* for box shadows to show on iOS */
+}
+
+.input__field:focus {
+	outline: none;
+}
+
+.input__label {
+	display: inline-block;
+	float: right;
+	padding: 0 1em;
+	width: 40%; background-color: #b3b9bf;
+	color: #fff;// #6a7989;
+	padding-left:14px; font-size: 14px;
+	font-weight: bold;
+	//font-size: 70.25%;
+	-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.input__label-content {
+	position: relative;
+	display: block;
+	padding: 1.6em 0;
+	width: 100%;
+}
+
+.graphic {
+	position: absolute;
+	top: 0;
+	left: 0;
+	fill: none;
+}
+
+.icon {
+	color: #ddd;
+	font-size: 150%;
+}
+
+/* Individual styles */
+
+
+/* Kaede */
+.input--kaede {
+	display: block;
+	overflow: hidden;
+	//margin: 1em auto 2em;
+	background:#9d12d9d; height:30px;border: 1px solid #707070;
+}
+
+.input__field--kaede {
+	position: absolute;
+	padding:0 0; 
+	margin: 0 0;
+	margin-top:-2px;
+	padding-left: 2px;
+	top: 0;border-right: 1px solid #707070;
+	right: 100%;
+	width: 60%;
+	height: 30px;
+	background: #fff;
+	color: #101010;
+	-webkit-transition: -webkit-transform 0.5s;
+	transition: transform 0.5s;
+	-webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+	transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.input__label--kaede {
+	z-index: 10;
+	display: block;
+	width: 100%;
+	height: 30px;
+	text-align: left;
+	cursor: text;font-size: 14px;
+	-webkit-transform-origin: 0% 0%;
+	transform-origin: 0% 0%;
+	-webkit-transition: -webkit-transform 0.5s;
+	transition: transform 0.5s;
+	-webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+	transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.input__label-content--kaede {
+	padding: 5px 0; font:inherit; font-size: 14px;color:9d9d9d;
+}
+
+.input__field--kaede:focus,
+.input--filled .input__field--kaede {
+	-webkit-transform: translate3d(100%, 0, 0);
+	transform: translate3d(100%, 0, 0);
+	-webkit-transition-delay: 0.06s;
+	transition-delay: 0.06s;
+}
+
+.input__field--kaede:focus + .input__label--kaede,
+.input--filled .input__label--kaede  {
+	-webkit-transform: translate3d(60%, 0, 0);
+	transform: translate3d(60%, 0, 0);
+	pointer-events: none;
+}
+
+@media screen and (max-width: 34em) {
+	.input__field--kaede:focus + .input__label--kaede,
+	.input--filled .input__label--kaede  {
+	//	-webkit-transform: translate3d(65%, 0, 0) scale3d(0.65, 0.65, 1);
+	//	transform: translate3d(65%, 0, 0) scale3d(0.65, 0.65, 1);
+	//	pointer-events: none;
+	}
+}
+
+.onoffswitch {
+    position: relative;
+	z-index: 1;
+	display: inline-block; width: 40px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px; ;
+}
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 14px; padding: 0; line-height: 14px;
+    font-size: 13px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "N";
+    padding-left: 8px;
+    background-color: #B2B7B8; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+    content: "S";
+    padding-right: 8px;
+    background-color: #B2B7B8; color: #FFFFFF;
+    text-align: right;
+}
+.onoffswitch-switch {
+    display: block; width: 18px; margin: -2px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 22px;
+    border: 2px solid #999999; border-radius: 20px;
+    transition: all 0.3s ease-in 0s; height:20px; top:1.2em
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px; 
+}
