@@ -75,8 +75,36 @@ function requireHandler(Map,
                         size: "18px",  // pixels
                     };
 
+                    const popupTemplate = {
+                        title: type+" point",
+                        content: [{
+                            // Pass in the fields to display
+                            type: "fields",
+                            fieldInfos: [{
+                                fieldName: "lat",
+                                label: "latitude"
+                            }, {
+                                fieldName: "lng",
+                                label: "longitude"
+                            }, {
+                                fieldName: "value",
+                                label: "value"
+                            }]
+                        }]
+                    };
+
                     let _point = new Point(coord_x, coord_y);
-                    let graphics = new Graphic({geometry: _point, symbol: symbol});
+                    let graphics = new Graphic({
+                        geometry: _point,
+                        symbol: symbol,
+                        popupTemplate: popupTemplate,
+                        attributes: {
+                            lat: point.lat,
+                            lng: point.lng,
+                            value: point.val
+                        }
+
+                    });
 
                     markerLayer.add(graphics);
                 }
