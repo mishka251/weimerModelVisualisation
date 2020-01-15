@@ -37,4 +37,6 @@ def get_matr(request):
 
     n, m, x, y, matr = read_data(filename)
 
-    return JsonResponse({'n':n, 'm':m, 'x': x, 'y': y, 'matr': matr})
+
+
+    return JsonResponse({'n': n, 'm': m, 'x': x, 'y': y, 'matr': matr})
