@@ -37,6 +37,16 @@ def get_matr(request):
 
     n, m, x, y, matr = read_data(filename)
 
+    res = []
+    max_v = -1e36
+    min_v = 1e36
+    for i in range(n):
+        for j in range(m):
+            if matr[i][j] == 1e36:
+                continue
+            obj = {'lat': (360 / 24) * x[i] - 180, 'lng': y[j], 'val': matr[i][j]}
+            max_v = max(max_v, matr[i][j])
+            min_v = min(min_v, matr[i][j])
+            res.append(obj)
 
-
-    return JsonResponse({'n': n, 'm': m, 'x': x, 'y': y, 'matr': matr})
+    return JsonResponse({'points': res, 'max': max_v, 'min': min_v})

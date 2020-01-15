@@ -57,57 +57,29 @@ function requireHandler(Map,
             success(result) {
                 markerLayer.removeAll();
                 console.log(result);
-                let n = result.n;
-                let m = result.m;
-                let x = result.x;
-                let y = result.y;
-                let matr = result.matr;
+
+                const min = result.min;
+                const max = result.max;
+
+                for (const point of result.points) {
+                    let coord_x = point.lat;//долгота?
+                    let coord_y = point.lng;//широта?
+                    let val = point.val;
 
 
-                let max = -1e36;
-                let min = 1e36;
+                    let color = getColor(val, min, max);
+                    const symbol = {
+                        type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+                        style: "circle",
+                        color: color,
+                        size: "18px",  // pixels
+                    };
 
-                for (let i = 0; i < n; i++) {
-                    for (let j = 0; j < m; j++) {
-                        if (matr[i][j] == 1e36) {
-                            continue;
-                        }
+                    let _point = new Point(coord_x, coord_y);
+                    let graphics = new Graphic({geometry: _point, symbol: symbol});
 
-                        let val = matr[i][j];
-
-                        min = val < min ? val : min;
-                        max = val > max ? val : max;
-                    }
+                    markerLayer.add(graphics);
                 }
-
-
-                for (let i = 0; i < n; i++) {
-                    for (let j = 0; j < m; j++) {
-                        if (matr[i][j] == 1e36) {
-                            continue;
-                        }
-
-                        let coord_x = (360 / 24) * x[i] - 180;//долгота?
-                        let coord_y = y[j];//широта?
-                        let val = matr[i][j];
-
-
-                        let color = getColor(val, min, max);
-                        const symbol = {
-                            type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-                            style: "circle",
-                            color: color,
-                            size: "18px",  // pixels
-                        };
-
-                        let point = new Point(coord_x, coord_y);
-                        let graphics = new Graphic({geometry: point, symbol: symbol});
-
-                        markerLayer.add(graphics);
-
-                    }
-                }
-
             }
         })
     }
