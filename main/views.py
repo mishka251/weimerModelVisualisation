@@ -44,7 +44,7 @@ def get_matr(request):
         for j in range(m):
             if matr[i][j] == 1e36:
                 continue
-            obj = {'lat': (360 / 24) * x[i] - 180, 'lng': y[j], 'val': matr[i][j]}
+            obj = {'lng': (360 / 24) * x[i] - 180, 'lat': y[j], 'val': matr[i][j]}
             max_v = max(max_v, matr[i][j])
             min_v = min(min_v, matr[i][j])
             res.append(obj)

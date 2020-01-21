@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>Geomagnet</title>
-
+{% load render_bundle from webpack_loader %}
 
     <meta name="description" content=""/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -21,16 +21,7 @@
 </head>
 <body>
 
-<script src="{% static "libs/jquery/jquery-1.11.1.min.js" %}"></script>
-
-
-<script src="https://js.arcgis.com/4.10/"></script>
-<script type="text/javascript" src="{% static "wmm/script.js" %}"></script>
-
-<script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEhtvfB8qhDSDgd9rZfNe5QaTvUIhr5vM"></script>
-<script type="text/javascript" src="https://www.google.com/jsapi?key=AIzaSyAEhtvfB8qhDSDgd9rZfNe5QaTvUIhr5vM"></script>
-
+{% render_bundle 'main' %}
 
 <div class="container-fluid">
     <div id="map" class="map">

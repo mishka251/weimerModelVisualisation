@@ -1,0 +1,40 @@
+{
+  "name": "weimermodel",
+  "version": "1.0.0",
+  "description": "Визуализация данных полученных при расчёте аврорального овала с помощью модели weimer\r ТЕСТОВАЯ ВЕРСИЯ",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "build": "webpack --config webpack.config.js --progress --color",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mishka251/weimerModelVisualisation.git"
+  },
+  "author": "mishka251",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mishka251/weimerModelVisualisation/issues"
+  },
+  "homepage": "https://github.com/mishka251/weimerModelVisualisation#readme",
+  "dependencies": {
+    "tslint": "^5.20.1"
+  },
+  "devDependencies": {
+    "@arcgis/webpack-plugin": "^4.14.0",
+    "@turf/turf": "^5.1.6",
+    "@types/arcgis-js-api": "^4.14.0",
+    "@types/jquery": "^3.3.31",
+    "arcgis-js-api": "^4.14.0",
+    "bootstrap": "^4.4.1",
+    "bootstrap-switch": "^3.4.0",
+    "jquery": "^3.4.1",
+    "popper": "^1.0.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-bundle-tracker": "^0.4.3",
+    "webpack-cli": "^3.3.10"
+  }
+}
