@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/mishka251/weimerModelVisualisation#readme",
   "dependencies": {
+    "@types/dojo": "^1.9.42",
     "tslint": "^5.20.1"
   },
   "devDependencies": {
