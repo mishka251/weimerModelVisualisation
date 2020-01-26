@@ -15,9 +15,13 @@ import FieldInfoFormat from "esri/popup/support/FieldInfoFormat";
 import PopupContent from "esri/popup/content/Content";
 import FieldsContent from "esri/popup/content/FieldsContent";
 
+import FeatureLayer from "esri/layers/FeatureLayer";
+import Polyline from "esri/geometry/Polyline";
 //import dojo from "dojo";
 
 import {AuroraPoint} from "./Model"
+import {FeatureCollection, point, feature, featureCollection, MultiLineString} from '@turf/helpers'
+import LineSymbol from "esri/symbols/LineSymbol3D"
 
 export default class ArcgisView {
     map: Map;
@@ -26,13 +30,17 @@ export default class ArcgisView {
     constraints: MapViewConstraints;
     container: string;
 
+    isolines: GraphicsLayer;
+
     constructor(container: string, onLoad: () => void) {
         this.container = container;
         this.map = new Map({
             basemap: "gray"
         });
         this.markerLayer = new GraphicsLayer();
+        this.isolines = new GraphicsLayer();
         this.map.add(this.markerLayer);
+        this.map.add(this.isolines);
 
         this.view = new SceneView({
             //view = new MapView({
@@ -65,7 +73,7 @@ export default class ArcgisView {
         return new Color('red');
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string) {
+    renderPoints(points: AuroraPoint[], min: number, max: number, type: string, isolines: FeatureCollection<MultiLineString>) {
         this.markerLayer.removeAll();
 
         for (const point of points) {
@@ -76,7 +84,7 @@ export default class ArcgisView {
             const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
                 style: "circle",
                 color: color,
-                size: 18,  // pixels
+                size: 12,  // pixels
             });
 
 
@@ -127,7 +135,46 @@ export default class ArcgisView {
             });
 
             this.markerLayer.add(graphics);
+
+
+//this.isolines.add(lines);
         }
+        const lines = isolines.features.map((feature) => {
+            return feature.geometry;
+        });
+        console.log(lines);
+        const polylines: Polyline[] = isolines.features.map<Polyline>((line) => {
+            return new Polyline({
+                paths: line.geometry.coordinates,
+            })
+        });
+        console.log(polylines);
+
+
+        const lineGraphics: Graphic[] = isolines.features.map<Graphic>((feature) => {
+            const lineSymbol: LineSymbol = new LineSymbol({
+                symbolLayers: [{
+                    type: "line",  // autocasts as new PathSymbol3DLayer()
+                    profile: "circle",
+                    width: 100,    // width of the tube in meters
+                    material: {
+                        color: this.getColor(feature.properties.value, min, max),
+                        width:20
+                    }
+                }]
+            });
+            return new Graphic({
+                geometry: new Polyline({
+                    paths: feature.geometry.coordinates,
+                }),
+                symbol: lineSymbol
+            });
+        });
+
+        lineGraphics.forEach((graphic) => {
+            this.isolines.add(graphic);
+        });
+
     }
 
 

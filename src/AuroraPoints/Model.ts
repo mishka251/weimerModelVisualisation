@@ -1,5 +1,10 @@
 import $ from "jquery";
 
+import {isolines, MultiLineString, Point} from "@turf/turf";
+import {FeatureCollection, point, feature, featureCollection} from '@turf/helpers'
+import {Feature} from "@turf/turf"
+
+
 export interface AuroraPoint {
     latitude: number;
     longitude: number;
@@ -25,7 +30,7 @@ export default class AuroraPointsModel {
     public max: number;
     public min: number;
 
-    public isolines: any;
+    public isolines: FeatureCollection<MultiLineString>;
     public type: string;
 
     constructor(url: string) {
@@ -54,6 +59,21 @@ export default class AuroraPointsModel {
                         });
                     }
 
+                    interface MyProps {
+                        value: number;
+                    }
+
+                    const featurePoints: Feature<Point, MyProps>[] = this.points.map<Feature<Point, MyProps>>((my_point: AuroraPoint) => {
+                        return point<MyProps>([my_point.longitude, my_point.latitude], {value: my_point.value});
+                    });
+
+                    const collection: FeatureCollection<Point, MyProps> = featureCollection<Point, MyProps>(featurePoints);
+                    //TODO сделать range генератор для этого
+                    const breaks: number[] = [-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45];
+                    this.isolines = isolines(collection, breaks, {zProperty: 'value'});
+
+                    console.log(collection);
+                    console.log(this.isolines);
                     resolve();
                 },
                 error: (jqXHR, textStatus, errorThrown) => {

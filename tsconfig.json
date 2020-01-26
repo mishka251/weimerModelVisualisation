@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "amd",
+    //"module": "amd",
     "noImplicitAny": true,
     "esModuleInterop": true,
     "sourceMap": true,

@@ -8,12 +8,12 @@ export default class AuroraPointsController {
 
 
     onMapLoad(): void {
-        this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type);
+        this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type, this.model.isolines);
     }
 
     onSwitchType(type: string) {
         this.model.loadPoints(type).then(() => {
-            this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type);
+            this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type, this.model.isolines);
         }).catch((error)=>{
             console.log(error);
         });
