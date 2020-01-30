@@ -84,7 +84,7 @@ export default class ArcgisView {
             const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
                 style: "circle",
                 color: color,
-                size: 12,  // pixels
+                size: 6,  // pixels
             });
 
 
@@ -159,15 +159,44 @@ export default class ArcgisView {
                     width: 100,    // width of the tube in meters
                     material: {
                         color: this.getColor(feature.properties.value, min, max),
-                        width:20
+                        width: 20
                     }
                 }]
             });
+
+
+            const isovalueFieldInfo: FieldInfo = new FieldInfo({
+                fieldName: "value",
+                label: "value"
+            });
+
+            const idofieldInfos: FieldInfo[] = [isovalueFieldInfo];
+            const isolineContent: PopupContent = new PopupContent({
+                fieldInfo: idofieldInfos
+            });
+            const isolineContents: PopupContent[] = [isolineContent];
+
+            let isolinesPopup = new PopupTemplate({
+                title: "isoline" + feature.properties.value,
+                content: isolineContents,
+                //     fieldInfos: [new FieldInfo({
+                //             fieldName: "value",
+                //             label: "value"
+                //         }
+                //     )]
+
+            });
+
+            //console.log(feature.properties);
             return new Graphic({
                 geometry: new Polyline({
                     paths: feature.geometry.coordinates,
                 }),
-                symbol: lineSymbol
+                symbol: lineSymbol,
+                popupTemplate: isolinesPopup,
+                attributes: {
+                    value: feature.properties.value
+                }
             });
         });
 
