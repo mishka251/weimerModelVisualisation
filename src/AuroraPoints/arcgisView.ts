@@ -19,9 +19,9 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import Polyline from "esri/geometry/Polyline";
 //import dojo from "dojo";
 
-import {AuroraPoint} from "./Model"
-import {FeatureCollection, point, feature, featureCollection, MultiLineString} from '@turf/helpers'
-import LineSymbol from "esri/symbols/LineSymbol3D"
+import {AuroraPoint} from "./Model";
+import {FeatureCollection, point, feature, featureCollection, MultiLineString} from "@turf/helpers";
+import LineSymbol from "esri/symbols/LineSymbol3D";
 
 export default class ArcgisView {
     map: Map;
@@ -44,6 +44,21 @@ export default class ArcgisView {
 
         this.view = new SceneView({
             //view = new MapView({
+            alphaCompositingEnabled: true,
+            environment: {
+                background: {
+                    type: "color",
+                    color: [0, 0, 0, 0]
+                },
+                starsEnabled: false,
+                atmosphereEnabled: false,
+            },
+            highlightOptions: {
+                color: [255, 255, 0, 1],
+                haloColor: new Color("white"),
+                haloOpacity: 0.,
+                fillOpacity: 0.
+            },
             container: this.container,
             map: this.map,
             zoom: 5,
@@ -62,20 +77,24 @@ export default class ArcgisView {
 
     getColor(val: number, min: number, max: number): Color {
         let rate = (val - min) / (max - min);
-        if (rate < 0.2)
-            return new Color('blue');
-        if (rate < 0.4)
-            return new Color('green');
-        if (rate < 0.6)
-            return new Color('yellow');
-        if (rate < 0.8)
-            return new Color('orange');
-        return new Color('red');
+        if (rate < 0.2) {
+            return new Color("blue");
+        }
+        if (rate < 0.4) {
+            return new Color("green");
+        }
+        if (rate < 0.6) {
+            return new Color("yellow");
+        }
+        if (rate < 0.8) {
+            return new Color("orange");
+        }
+        return new Color("red");
     }
 
     renderPoints(points: AuroraPoint[], min: number, max: number, type: string, isolines: FeatureCollection<MultiLineString>) {
         this.markerLayer.removeAll();
-
+        this.isolines.removeAll();
         for (const point of points) {
             let val: number = point.value;
 
@@ -84,7 +103,7 @@ export default class ArcgisView {
             const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
                 style: "circle",
                 color: color,
-                size: 6,  // pixels
+                size: 6  // pixels
             });
 
 
@@ -95,7 +114,7 @@ export default class ArcgisView {
 
             const longitudeFieldInfo: FieldInfo = new FieldInfo({
                 fieldName: "lng",
-                label: "longitude",
+                label: "longitude"
             });
 
             const valueFieldInfo: FieldInfo = new FieldInfo({
@@ -106,14 +125,14 @@ export default class ArcgisView {
             const fieldInfos: FieldInfo[] = [latitudeFieldInfo, longitudeFieldInfo, valueFieldInfo];
 
             const content: FieldsContent = new FieldsContent({
-                fieldInfos: fieldInfos,
+                fieldInfos: fieldInfos
             });
 
             const contents: PopupContent[] = [content];
 
             const popupTemplate: PopupTemplate = new PopupTemplate({
                 title: type + " point",
-                content: contents,
+                content: contents
             });
 
             let _point: Point = new Point(
@@ -134,7 +153,7 @@ export default class ArcgisView {
 
             });
 
-            this.markerLayer.add(graphics);
+            //this.markerLayer.add(graphics);
 
 
 //this.isolines.add(lines);
@@ -145,8 +164,8 @@ export default class ArcgisView {
         console.log(lines);
         const polylines: Polyline[] = isolines.features.map<Polyline>((line) => {
             return new Polyline({
-                paths: line.geometry.coordinates,
-            })
+                paths: line.geometry.coordinates
+            });
         });
         console.log(polylines);
 
@@ -178,7 +197,7 @@ export default class ArcgisView {
 
             let isolinesPopup = new PopupTemplate({
                 title: "isoline" + feature.properties.value,
-                content: isolineContents,
+                content: isolineContents
                 //     fieldInfos: [new FieldInfo({
                 //             fieldName: "value",
                 //             label: "value"
@@ -190,7 +209,7 @@ export default class ArcgisView {
             //console.log(feature.properties);
             return new Graphic({
                 geometry: new Polyline({
-                    paths: feature.geometry.coordinates,
+                    paths: feature.geometry.coordinates
                 }),
                 symbol: lineSymbol,
                 popupTemplate: isolinesPopup,
@@ -216,14 +235,14 @@ export default class ArcgisView {
                 container: this.container,
                 map: this.map,
                 zoom: zoom,
-                center: center,
+                center: center
             });
         } else {
             this.view = new SceneView({
                 container: this.container,
                 map: this.map,
                 zoom: zoom,
-                center: center,
+                center: center
             });
         }
         this.view.constraints = this.constraints;

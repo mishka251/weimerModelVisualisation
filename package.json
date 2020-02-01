@@ -27,15 +27,19 @@
     "@turf/turf": "^5.1.6",
     "@types/arcgis-js-api": "^4.14.0",
     "@types/jquery": "^3.3.31",
+    "@types/leaflet": "^1.5.8",
     "arcgis-js-api": "^4.14.0",
     "bootstrap": "^4.4.1",
     "bootstrap-switch": "^3.4.0",
     "jquery": "^3.4.1",
+    "leaflet": "^1.6.0",
     "popper": "^1.0.1",
     "ts-loader": "^6.2.1",
+    "turf": "^3.0.14",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-bundle-tracker": "^0.4.3",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "wrld.js": "^0.1.2152"
   }
 }

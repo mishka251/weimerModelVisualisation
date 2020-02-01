@@ -33,7 +33,7 @@ def read_data(filename: str) -> Tuple[int, int, List[float], List[float], List[L
 
 def get_matr(request):
     type = request.GET.get('type', "epot")
-    filename: str = "wei05sc_epot_f90.dat" if type == 'epot' else "wei05sc_fac_f90.dat"
+    filename: str = "wei05sc_epot_f90_big.dat" if type == 'epot' else "wei05sc_fac_f90_big.dat"
 
     n, m, x, y, matr = read_data(filename)
 
