@@ -8,7 +8,7 @@
     "eofline": true,
     "forin": false,
     "indent": [
-      true,
+      false,
       "spaces"
     ],
     "interface-name": false,

@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from .weimer.test import AuroraCalculator
 
 
 # Create your views here.
@@ -33,9 +34,11 @@ def read_data(filename: str) -> Tuple[int, int, List[float], List[float], List[L
 
 def get_matr(request):
     type = request.GET.get('type', "epot")
-    filename: str = "wei05sc_epot_f90_big.dat" if type == 'epot' else "wei05sc_fac_f90_big.dat"
+    # filename: str = "wei05sc_epot_f90_big.dat" if type == 'epot' else "wei05sc_fac_f90_big.dat"
 
-    n, m, x, y, matr = read_data(filename)
+    calucator = AuroraCalculator()
+
+    n, m, x, y, matr = calucator.calc_epot() if type == 'epot' else calucator.calc_mpfac()  # read_data(filename)
 
     res = []
     max_v = -1e36
@@ -44,7 +47,7 @@ def get_matr(request):
         for j in range(m):
             if matr[i][j] == 1e36:
                 continue
-            obj = {'lng': (360 / 24) * x[i] - 180, 'lat': y[j], 'val': matr[i][j]}
+            obj = {'lng': x[i] - 180, 'lat': y[j], 'val': matr[i][j]}
             max_v = max(max_v, matr[i][j])
             min_v = min(min_v, matr[i][j])
             res.append(obj)

@@ -69,7 +69,11 @@ export default class AuroraPointsModel {
 
                     const collection: FeatureCollection<Point, MyProps> = featureCollection<Point, MyProps>(featurePoints);
                     //TODO сделать range генератор для этого
-                    const breaks: number[] = [-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45];
+                    const breaks: number[] = [];// [-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45];
+                    for (let i = -15; i <= 15; i += 0.5) {
+                        breaks.push(i);
+                    }
+
                     this.isolines = isolines(collection, breaks, {zProperty: 'value'});
 
                     console.log(collection);

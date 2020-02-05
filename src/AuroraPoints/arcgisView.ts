@@ -153,7 +153,7 @@ export default class ArcgisView {
 
             });
 
-            //this.markerLayer.add(graphics);
+            this.markerLayer.add(graphics);
 
 
 //this.isolines.add(lines);
