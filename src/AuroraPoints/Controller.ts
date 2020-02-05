@@ -3,11 +3,12 @@ import AuroraPointsModel from "./Model";
 import LeafletView from "./leafletView";
 import arcgisView from "./arcgisView";
 import leafletView from "./leafletView";
+import Chorroleth from "./arcgisChoropleth"
 //import {AuroraPoint} from "./Model";
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;
-    view: ArcgisView | LeafletView;
+    view: ArcgisView | LeafletView|Chorroleth;
 
 
     onMapLoad(): void {
@@ -32,7 +33,7 @@ export default class AuroraPointsController {
         this.model = new AuroraPointsModel("points");
 
         this.model.loadPoints("epot").then(() => {
-            this.view = new arcgisView("map", () => this.onMapLoad());
+            this.view = new Chorroleth("map", () => this.onMapLoad());
         }).catch((error) => {
             console.log(error);
         });
