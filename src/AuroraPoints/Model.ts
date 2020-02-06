@@ -1,9 +1,9 @@
 import $ from "jquery";
 
-import {isolines, MultiLineString, Point} from "@turf/turf";
+import {isolines, MultiLineString, Point, Polygon} from "@turf/turf";
 import {FeatureCollection, point, feature, featureCollection} from '@turf/helpers'
 import {Feature} from "@turf/turf"
-
+import tin from "@turf/tin";
 
 export interface AuroraPoint {
     latitude: number;
@@ -31,6 +31,7 @@ export default class AuroraPointsModel {
     public min: number;
 
     public isolines: FeatureCollection<MultiLineString>;
+    public tins: FeatureCollection<Polygon>;
     public type: string;
 
     constructor(url: string) {
@@ -75,7 +76,7 @@ export default class AuroraPointsModel {
                     }
 
                     this.isolines = isolines(collection, breaks, {zProperty: 'value'});
-
+                    this.tins = tin(collection, 'value');
                     console.log(collection);
                     console.log(this.isolines);
                     resolve();

@@ -1,6 +1,6 @@
 //import {Map, Marker, Layer, LatLng, LayerGroup, Polyline, TileLayer} from "leaflet";
 import {AuroraPoint} from "./Model";
-import {FeatureCollection, MultiLineString} from "@turf/helpers";
+import {FeatureCollection, MultiLineString, Polygon} from "@turf/helpers";
 
 
 const eegeoKey = "94862e86a09f465f6a34f05d9dda0f48";
@@ -43,7 +43,9 @@ export default class LeafletView {
         }
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string, isolines: FeatureCollection<MultiLineString>) {
+    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
+                 isolines: FeatureCollection<MultiLineString>,
+                 tins: FeatureCollection<Polygon>) {
         this.clearMap();
 
         this.markerLayer = L.layerGroup();

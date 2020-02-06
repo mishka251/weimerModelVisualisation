@@ -7,7 +7,7 @@ import histogram from "esri/renderers/smartMapping/statistics/histogram";
 import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
 import * as watchUtils from "esri/core/watchUtils";
 import {AuroraPoint} from "./Model";
-import {FeatureCollection, MultiLineString} from "@turf/helpers";
+import {FeatureCollection, MultiLineString, Polygon} from "@turf/helpers";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
 import Color from "esri/Color";
 import SimpleMarkerSymbol from "esri/symbols/SimpleMarkerSymbol";
@@ -19,11 +19,13 @@ import Point from "esri/geometry/Point";
 import Graphic from "esri/Graphic";
 
 import SimpleRenderer from "esri/renderers/SimpleRenderer";
+import ColorVariable from "esri/renderers/visualVariables/ColorVariable";
+import colorCreateContinuousRendererParams = __esri.colorCreateContinuousRendererParams;
 
 export default class Chorroleth {
     map: Map;
     view: SceneView;
-    testLayer: FeatureLayer;
+    //testLayer: FeatureLayer;
     graphicLayer: FeatureLayer;
 
     constructor(container: string, onLoad: () => void) {
@@ -38,52 +40,10 @@ export default class Chorroleth {
             zoom: 5
         });
 
-        this.init_all();
 
         this.view.when(onLoad);
     }
 
-    init_all() {
-        // Create a map and add it to a MapView
-
-
-// Create FeatureLayer instance with popupTemplate
-
-        this.testLayer = new FeatureLayer({
-            url:
-                "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/counties_politics_poverty/FeatureServer/0",
-            popupTemplate: {
-                // autocasts as new PopupTemplate()
-                title: "{COUNTY}, {STATE}",
-                content:
-                    "{POP_POVERTY} of {TOTPOP_CY} people live below the poverty line.",
-                fieldInfos: [
-                    {
-                        fieldName: "POP_POVERTY",
-                        format: {
-                            digitSeparator: true,
-                            places: 0
-                        }
-                    },
-                    {
-                        fieldName: "TOTPOP_CY",
-                        format: {
-                            digitSeparator: true,
-                            places: 0
-                        }
-                    }
-                ]
-            }
-        });
-
-        //this.graphicLayer = new GraphicsLayer();
-
-        //this.map.add(this.testLayer);
-        // this.map.add(this.graphicLayer);
-        // watchUtils.whenFalseOnce(this.view, "updating", () => {
-        //     this.generateRenderer();
-        // });
-    }
 
     getColor(val: number, min: number, max: number): Color {
         let rate = (val - min) / (max - min);
@@ -102,10 +62,49 @@ export default class Chorroleth {
         return new Color("red");
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string, isolines: FeatureCollection<MultiLineString>) {
+    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
+                 isolines: FeatureCollection<MultiLineString>,
+                 tins: FeatureCollection<Polygon>) {
 
         console.log("start render");
         const arr_graphics: Graphic[] = [];
+
+
+        const latitudeFieldInfo: FieldInfo = new FieldInfo({
+            fieldName: "latitude",
+            label: "latitude"
+        });
+
+        const longitudeFieldInfo: FieldInfo = new FieldInfo({
+            fieldName: "longitude",
+            label: "longitude"
+        });
+
+        const valueFieldInfo: FieldInfo = new FieldInfo({
+            fieldName: "value",
+            label: "value"
+        });
+
+        const fieldInfos: FieldInfo[] = [
+            latitudeFieldInfo,
+            longitudeFieldInfo,
+            valueFieldInfo];
+
+        const content: FieldsContent = new FieldsContent({
+            fieldInfos: fieldInfos
+        });
+
+        const contents: PopupContent[] = [content];
+
+        const popupTemplate: PopupTemplate = new PopupTemplate({
+            title: type + " point",
+            content: contents
+        });
+
+
+        if (this.graphicLayer) {
+            this.map.remove(this.graphicLayer);
+        }
 
         for (const point of points) {
             let val: number = point.value;
@@ -119,34 +118,6 @@ export default class Chorroleth {
             });
 
 
-            const latitudeFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "lat",
-                label: "latitude"
-            });
-
-            const longitudeFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "lng",
-                label: "longitude"
-            });
-
-            const valueFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "value",
-                label: "value"
-            });
-
-            const fieldInfos: FieldInfo[] = [latitudeFieldInfo, longitudeFieldInfo, valueFieldInfo];
-
-            const content: FieldsContent = new FieldsContent({
-                fieldInfos: fieldInfos
-            });
-
-            const contents: PopupContent[] = [content];
-
-            const popupTemplate: PopupTemplate = new PopupTemplate({
-                title: type + " point",
-                content: contents
-            });
-
             let _point: Point = new Point(
                 {
                     latitude: point.latitude,
@@ -158,10 +129,10 @@ export default class Chorroleth {
                 symbol: symbol,
                 popupTemplate: popupTemplate,
                 attributes: {
-                    lat: point.latitude,
-                    lng: point.longitude,
+                    latitude: point.latitude,
+                    longitude: point.longitude,
                     value: point.value,
-                    id: 1
+                    id: Math.random()
                 }
 
             });
@@ -169,37 +140,47 @@ export default class Chorroleth {
             //this.graphicLayer.add(graphics);
         }
 
+
         this.graphicLayer = new FeatureLayer({
             source: arr_graphics,  // array of graphics objects
             objectIdField: "id",
-            fields: [{
-                name: "id",
-                type: "oid"
-            }, {
-                name: "value",
-                type: "double"
-            }],
-            popupTemplate: {
-                content: "<img src='{url}'>"
-            },
+            fields: [
+                {
+                    name: "id",
+                    type: "oid"
+                },
+                {
+                    name: "value",
+                    type: "double"
+                },
+                {
+                    name: "latitude",
+                    type: "double"
+                },
+                {
+                    name: "longitude",
+                    type: "double"
+                }],
+            popupTemplate: popupTemplate,
             renderer: new SimpleRenderer({  // overrides the layer's default renderer
-              //type: "simple",
-              symbol: new SimpleMarkerSymbol({
-                  style: "circle"
-              })
-              //     {
-              //   type: "text",
-              //   color: "#7A003C",
-              //   text: "\ue661",
-              //   font: {
-              //     size: 20,
-              //     family: "CalciteWebCoreIcons"
-              //   }
-              // }
+                //type: "simple",
+                symbol: new SimpleMarkerSymbol({
+                    style: "circle"
+                }),
+                visualVariables: [
+                    new ColorVariable({
+                        field: "value",
+                        normalizationField: "SQ_KM",
+                        // features with 30 ppl/sq km or below are assigned the first color
+                        stops: [{value: 0, color: "#FFFCD4"},
+                            {value: 10, color: "#0D2644"}]
+                    })]
+
             })
         });
 
-        //this.generateRenderer();
+        this.map.add(this.graphicLayer);
+        this.generateRenderer();
 
     }
 
@@ -209,123 +190,97 @@ export default class Chorroleth {
         // or arcade expression. The view and other properties determine
         // the appropriate default color scheme.
 
-        const colorParams = {
-            layer: this.testLayer,
-            valueExpression:
-                "( $feature.POP_POVERTY / $feature.TOTPOP_CY ) * 100",
-            view: this.view,
-            theme: "above-and-below",
-            outlineOptimizationEnabled: true
-        };
 
-        const colorParams2 = {
+        const colorParams2: colorCreateContinuousRendererParams = {
             layer: this.graphicLayer,
             valueExpression:
-                "( $feature.value ) * 100",
+                "$feature.value",
             view: this.view,
             theme: "above-and-below",
             outlineOptimizationEnabled: true
         };
-
-        // Generate a continuous color renderer based on the
-        // statistics of the data in the provided testLayer
-        // and field normalized by the normalizationField.
-        //
-        // This resolves to an object containing several helpful
-        // properties, including color scheme, statistics,
-        // the renderer and visual variable
-
-        //let rendererResult: any;
 
         colorRendererCreator
             .createContinuousRenderer(colorParams2)
-            .then((rendererResult) => {
+            .then<any[]>((rendererResult) => {
                 // set the renderer to the testLayer and add it to the map
                 //rendererResult = response;
-                //@ts-ignore
-                // this.graphicLayer.renderer = rendererResult.renderer;
+
+                this.graphicLayer.renderer = rendererResult.renderer;
+                this.graphicLayer.refresh();
+
+                return [histogram({
+                    layer: this.graphicLayer,
+                    valueExpression: colorParams2.valueExpression,
+                    view: this.view,
+                    numBins: 70
+                }), rendererResult];
+            })
+            .then(([histogramResult, rendererResult]) => {
+                // Construct a color slider from the result of both
+                // smart mapping renderer and histogram methods
+
+                const colorSlider = ColorSlider.fromRendererResult(
+                    rendererResult,
+                    histogramResult
+                );
+
+                const slider = document.createElement("div");
+                slider.classList.add("slider");
+
+                colorSlider.container = slider;//"slider";
+                colorSlider.primaryHandleEnabled = true;
+                // Round labels to 1 decimal place
+                colorSlider.labelFormatFunction = function (value, type) {
+                    return value.toFixed(1);
+                };
+                // styles the standard deviation lines to be shorter
+                // than the average line
+                colorSlider.histogramConfig.dataLineCreatedFunction = function (
+                    lineElement,
+                    labelElement,
+                    index
+                ) {
+                    if (index != null) {
+                        lineElement.setAttribute("x2", "66%");
+                        const sign = index === 0 ? "-" : "+";
+                        labelElement.innerHTML = sign + "σ";
+                    }
+                };
+                colorSlider.viewModel.precision = 1;
+
+                this.view.ui.empty("bottom-left");
+
+                const container = document.createElement("div");
+                container.classList.add("containerDiv");
+                container.innerText = "Header";
+                container.append(slider);
+                this.view.ui.add(container, "bottom-left");
+
+
+                // when the user slides the handle(s), update the renderer
+                // with the updated color visual variable object
+
+                const changeEventHandler = () => {
+                    //@ts-ignore
+                    const renderer = this.graphicLayer.renderer.clone();
+                    const colorVariable = renderer.visualVariables[0].clone();
+                    const outlineVariable = renderer.visualVariables[1];
+                    colorVariable.stops = colorSlider.stops;
+                    renderer.visualVariables = [colorVariable, outlineVariable];
+                    this.graphicLayer.renderer = renderer;
+                };
+
+                // @ts-ignore
+                colorSlider.on(["thumb-change", "thumb-drag", "min-change", "max-change"],
+                    changeEventHandler
+                );
             })
             .catch(function (error) {
                 console.log("there was an error: ", error);
                 console.log(colorParams2);
             });
-
-        colorRendererCreator
-            .createContinuousRenderer(colorParams)
-            .then((rendererResult) => {
-                // set the renderer to the testLayer and add it to the map
-                //rendererResult = response;
-                //this.testLayer.renderer = rendererResult.renderer;
-                //@ts-ignore
-                // this.graphicLayer.renderer = rendererResult.renderer;
-                //
-                // if (!this.map.layers.includes(this.testLayer)) {
-                //     this.map.add(this.testLayer);
-                // }
-
-                // generate a histogram for use in the slider. Input the testLayer
-                // and field or arcade expression to generate it.
-
-                // return histogram({
-                //     testLayer: this.testLayer,
-                //     valueExpression: colorParams.valueExpression,
-                //     view: this.view,
-                //     numBins: 70
-                // });
-            })
-            .then((histogramResult) => {
-                // Construct a color slider from the result of both
-                // smart mapping renderer and histogram methods
-                // const colorSlider = ColorSlider.fromRendererResult(
-                //     rendererResult,
-                //     histogramResult
-                // );
-                // colorSlider.container = "slider";
-                // colorSlider.primaryHandleEnabled = true;
-                // // Round labels to 1 decimal place
-                // colorSlider.labelFormatFunction = function (value, type) {
-                //     return value.toFixed(1);
-                // };
-                // styles the standard deviation lines to be shorter
-                // than the average line
-                // colorSlider.histogramConfig.dataLineCreatedFunction = function (
-                //     lineElement,
-                //     labelElement,
-                //     index
-                // ) {
-                //     if (index != null) {
-                //         lineElement.setAttribute("x2", "66%");
-                //         const sign = index === 0 ? "-" : "+";
-                //         labelElement.innerHTML = sign + "σ";
-                //     }
-                // };
-                // colorSlider.viewModel.precision = 1;
-                // this.view.ui.add("containerDiv", "bottom-left");
-
-                // when the user slides the handle(s), update the renderer
-                // with the updated color visual variable object
-
-                // const changeEventHandler = () => {
-                //     //@ts-ignore
-                //     const renderer = this.testLayer.renderer.clone();
-                //     const colorVariable = renderer.visualVariables[0].clone();
-                //     const outlineVariable = renderer.visualVariables[1];
-                //     colorVariable.stops = colorSlider.stops;
-                //     renderer.visualVariables = [colorVariable, outlineVariable];
-                //     this.testLayer.renderer = renderer;
-                // }
-
-                // @ts-ignore
-                // colorSlider.on(["thumb-change", "thumb-drag", "min-change", "max-change"],
-                //     changeEventHandler
-                // );
-            })
-            .catch(function (error) {
-                console.log("there was an error: ", error);
-                console.log(colorParams);
-            });
     }
-
 }
 
 

@@ -5,21 +5,26 @@ import arcgisView from "./arcgisView";
 import leafletView from "./leafletView";
 import Chorroleth from "./arcgisChoropleth"
 //import {AuroraPoint} from "./Model";
+import arcgisTIN from "./arcgisTIN";
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;
-    view: ArcgisView | LeafletView | Chorroleth;
+    view: ArcgisView | LeafletView | Chorroleth | arcgisTIN;
 
 
     onMapLoad(): void {
         console.log("map load");
         console.log(this);
-        this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type, this.model.isolines);
+        this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type,
+            this.model.isolines,
+            this.model.tins);
     }
 
     onSwitchType(type: string) {
         this.model.loadPoints(type).then(() => {
-            this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type, this.model.isolines);
+            this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type,
+                this.model.isolines,
+                this.model.tins);
         }).catch((error) => {
             console.log(error);
         });
@@ -33,7 +38,7 @@ export default class AuroraPointsController {
         this.model = new AuroraPointsModel("points");
 
         this.model.loadPoints("epot").then(() => {
-            this.view = new Chorroleth("map", () => this.onMapLoad());
+            this.view = new arcgisTIN("map", () => this.onMapLoad());
         }).catch((error) => {
             console.log(error);
         });

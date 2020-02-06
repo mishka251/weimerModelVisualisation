@@ -19,8 +19,17 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import Polyline from "esri/geometry/Polyline";
 //import dojo from "dojo";
 
+import Polygon from "esri/geometry/Polygon";
+
 import {AuroraPoint} from "./Model";
-import {FeatureCollection, point, feature, featureCollection, MultiLineString, Polygon} from "@turf/helpers";
+import {
+    FeatureCollection,
+    Polygon as turfPolygon,
+    point,
+    feature,
+    featureCollection,
+    MultiLineString
+} from "@turf/helpers";
 import LineSymbol from "esri/symbols/LineSymbol3D";
 
 export default class ArcgisView {
@@ -94,7 +103,8 @@ export default class ArcgisView {
 
     renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
                  isolines: FeatureCollection<MultiLineString>,
-    tins: FeatureCollection<Polygon>) {
+                 tins: FeatureCollection<turfPolygon>
+    ) {
         this.markerLayer.removeAll();
         this.isolines.removeAll();
         for (const point of points) {
@@ -156,74 +166,103 @@ export default class ArcgisView {
             });
 
             this.markerLayer.add(graphics);
+        }
 
+        const polygons = tins.features.map<Graphic>((feature) => {
+            console.log(feature);
+            const polygon = new Polygon({
+                rings: feature.geometry.coordinates
+            }); //arcgisPolygon.fromJSON(feature);
+
+            console.log(polygon);
+
+            const param = (feature.properties.a + feature.properties.b + feature.properties.c) / 3;
+
+            const fillSymbol = {
+                type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                color: this.getColor(param, min, max),
+                outline: {
+                    // autocasts as new SimpleLineSymbol()
+                    color: this.getColor(param, min, max),
+                    width: 1
+                }
+            };
+            return new Graphic({
+                geometry: polygon,
+                symbol: fillSymbol
+            });
+        });
+
+        polygons.forEach((polygon) => {
+            this.isolines.add(polygon);
+        })
 
 //this.isolines.add(lines);
-        }
-        const lines = isolines.features.map((feature) => {
-            return feature.geometry;
-        });
-        console.log(lines);
-        const polylines: Polyline[] = isolines.features.map<Polyline>((line) => {
-            return new Polyline({
-                paths: line.geometry.coordinates
-            });
-        });
-        console.log(polylines);
+//
+//         const lines = isolines.features.map((feature) => {
+//             return feature.geometry;
+//         });
+//         console.log(lines);
+//         const polylines: Polyline[] = isolines.features.map<Polyline>((line) => {
+//             return new Polyline({
+//                 paths: line.geometry.coordinates
+//             });
+//         });
+//         console.log(polylines);
+//
+//
+//         const lineGraphics: Graphic[] = isolines.features.map<Graphic>((feature) => {
+//             const lineSymbol: LineSymbol = new LineSymbol({
+//                 symbolLayers: [{
+//                     type: "line",  // autocasts as new PathSymbol3DLayer()
+//                     profile: "circle",
+//                     width: 100,    // width of the tube in meters
+//                     material: {
+//                         color: this.getColor(feature.properties.value, min, max),
+//                         width: 20
+//                     }
+//                 }]
+//             });
+//
+//
+//             const isovalueFieldInfo: FieldInfo = new FieldInfo({
+//                 fieldName: "value",
+//                 label: "value"
+//             });
+//
+//             const idofieldInfos: FieldInfo[] = [isovalueFieldInfo];
+//             const isolineContent: PopupContent = new PopupContent({
+//                 fieldInfo: idofieldInfos
+//             });
+//             const isolineContents: PopupContent[] = [isolineContent];
+//
+//             let isolinesPopup = new PopupTemplate({
+//                 title: "isoline" + feature.properties.value,
+//                 content: isolineContents
+//                 //     fieldInfos: [new FieldInfo({
+//                 //             fieldName: "value",
+//                 //             label: "value"
+//                 //         }
+//                 //     )]
+//
+//             });
+//
+//             //console.log(feature.properties);
+//             return new Graphic({
+//                 geometry: new Polyline({
+//                     paths: feature.geometry.coordinates
+//                 }),
+//                 symbol: lineSymbol,
+//                 popupTemplate: isolinesPopup,
+//                 attributes: {
+//                     value: feature.properties.value
+//                 }
+//             });
+//         });
 
-
-        const lineGraphics: Graphic[] = isolines.features.map<Graphic>((feature) => {
-            const lineSymbol: LineSymbol = new LineSymbol({
-                symbolLayers: [{
-                    type: "line",  // autocasts as new PathSymbol3DLayer()
-                    profile: "circle",
-                    width: 100,    // width of the tube in meters
-                    material: {
-                        color: this.getColor(feature.properties.value, min, max),
-                        width: 20
-                    }
-                }]
-            });
-
-
-            const isovalueFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "value",
-                label: "value"
-            });
-
-            const idofieldInfos: FieldInfo[] = [isovalueFieldInfo];
-            const isolineContent: PopupContent = new PopupContent({
-                fieldInfo: idofieldInfos
-            });
-            const isolineContents: PopupContent[] = [isolineContent];
-
-            let isolinesPopup = new PopupTemplate({
-                title: "isoline" + feature.properties.value,
-                content: isolineContents
-                //     fieldInfos: [new FieldInfo({
-                //             fieldName: "value",
-                //             label: "value"
-                //         }
-                //     )]
-
-            });
-
-            //console.log(feature.properties);
-            return new Graphic({
-                geometry: new Polyline({
-                    paths: feature.geometry.coordinates
-                }),
-                symbol: lineSymbol,
-                popupTemplate: isolinesPopup,
-                attributes: {
-                    value: feature.properties.value
-                }
-            });
-        });
-
-        lineGraphics.forEach((graphic) => {
-            this.isolines.add(graphic);
-        });
+        // lineGraphics.forEach((graphic) => {
+        //     this.isolines.add(graphic);
+        // });
 
     }
 
