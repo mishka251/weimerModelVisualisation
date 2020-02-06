@@ -16,12 +16,12 @@ export default class LeafletView {
 
     constructor(container: string, onLoad: () => void) {
         this.container = container;
-        //const layer =  L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+        //const testLayer =  L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
         this.map = L.eeGeo.map(container, eegeoKey, {
             zoom: 5,
             center: [55, 55],
-           // layers: [layer]
+           // layers: [testLayer]
         });
 
         // console.log("constructor");

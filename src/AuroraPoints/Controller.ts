@@ -8,7 +8,7 @@ import Chorroleth from "./arcgisChoropleth"
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;
-    view: ArcgisView | LeafletView|Chorroleth;
+    view: ArcgisView | LeafletView | Chorroleth;
 
 
     onMapLoad(): void {
