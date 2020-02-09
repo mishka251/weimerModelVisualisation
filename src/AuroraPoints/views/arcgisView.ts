@@ -19,11 +19,12 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import Polyline from "esri/geometry/Polyline";
 //import dojo from "dojo";
 
-import {AuroraPoint} from "./Model";
+import {AuroraPoint} from "../Model";
 import {FeatureCollection, point, feature, featureCollection, MultiLineString, Polygon} from "@turf/helpers";
 import LineSymbol from "esri/symbols/LineSymbol3D";
+import AbstractView from "./abstractView";
 
-export default class ArcgisView {
+export default class ArcgisView extends  AbstractView{
     map: Map;
     markerLayer: GraphicsLayer;
     view: SceneView | MapView;
@@ -33,6 +34,7 @@ export default class ArcgisView {
     isolines: GraphicsLayer;
 
     constructor(container: string, onLoad: () => void) {
+        super(container, onLoad);
         this.container = container;
         this.map = new Map({
             basemap: "gray"

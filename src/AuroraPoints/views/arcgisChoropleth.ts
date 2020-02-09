@@ -6,7 +6,7 @@ import * as colorRendererCreator from "esri/renderers/smartMapping/creators/colo
 import histogram from "esri/renderers/smartMapping/statistics/histogram";
 import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
 import * as watchUtils from "esri/core/watchUtils";
-import {AuroraPoint} from "./Model";
+import {AuroraPoint} from "../Model";
 import {FeatureCollection, MultiLineString, Polygon} from "@turf/helpers";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
 import Color from "esri/Color";
@@ -21,14 +21,16 @@ import Graphic from "esri/Graphic";
 import SimpleRenderer from "esri/renderers/SimpleRenderer";
 import ColorVariable from "esri/renderers/visualVariables/ColorVariable";
 import colorCreateContinuousRendererParams = __esri.colorCreateContinuousRendererParams;
+import AbstractView from "./abstractView";
 
-export default class Chorroleth {
+export default class Chorroleth extends AbstractView {
     map: Map;
     view: SceneView;
     //testLayer: FeatureLayer;
     graphicLayer: FeatureLayer;
 
     constructor(container: string, onLoad: () => void) {
+        super(container, onLoad);
         this.map = new Map({
             basemap: "gray-vector"
         });
@@ -132,14 +134,13 @@ export default class Chorroleth {
                     latitude: point.latitude,
                     longitude: point.longitude,
                     value: point.value,
-                    id: Math.random()
                 }
 
             });
             arr_graphics.push(graphics);
             //this.graphicLayer.add(graphics);
         }
-
+        console.log(arr_graphics);
 
         this.graphicLayer = new FeatureLayer({
             source: arr_graphics,  // array of graphics objects
@@ -170,7 +171,7 @@ export default class Chorroleth {
                 visualVariables: [
                     new ColorVariable({
                         field: "value",
-                        normalizationField: "SQ_KM",
+                        //normalizationField: "SQ_KM",
                         // features with 30 ppl/sq km or below are assigned the first color
                         stops: [{value: 0, color: "#FFFCD4"},
                             {value: 10, color: "#0D2644"}]
@@ -193,10 +194,10 @@ export default class Chorroleth {
 
         const colorParams2: colorCreateContinuousRendererParams = {
             layer: this.graphicLayer,
-            valueExpression:
-                "$feature.value",
+            field: 'value',
             view: this.view,
-            theme: "above-and-below",
+            theme: "high-to-low",
+            symbolType: "3d-flat",
             outlineOptimizationEnabled: true
         };
 

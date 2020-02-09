@@ -32,6 +32,7 @@ export default class AuroraPointsModel {
 
     public isolines: FeatureCollection<MultiLineString>;
     public tins: FeatureCollection<Polygon>;
+
     public type: string;
 
     constructor(url: string) {
@@ -79,6 +80,22 @@ export default class AuroraPointsModel {
                     this.tins = tin(collection, 'value');
                     console.log(collection);
                     console.log(this.isolines);
+                    console.log(this.tins);
+
+
+                    this.points = this.points.filter((point)=>{
+                        return point.value!=null;
+                    });
+
+                    this.tins.features = this.tins.features.filter((feature)=>{
+                        return Object.values( feature.properties).every((value)=>{
+                            return value!=null
+                        });
+                    });
+
+                    console.log(this.tins);
+
+
                     resolve();
                 },
                 error: (jqXHR, textStatus, errorThrown) => {

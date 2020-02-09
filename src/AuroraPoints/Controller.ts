@@ -1,15 +1,18 @@
-import ArcgisView from "./arcgisView";
+import ArcgisView from "./views/arcgisView";
 import AuroraPointsModel from "./Model";
-import LeafletView from "./leafletView";
-import arcgisView from "./arcgisView";
-import leafletView from "./leafletView";
-import Chorroleth from "./arcgisChoropleth"
+import LeafletView from "./views/leafletView";
+import arcgisView from "./views/arcgisView";
+import leafletView from "./views/leafletView";
+import Chorroleth from "./views/arcgisChoropleth"
 //import {AuroraPoint} from "./Model";
-import arcgisTIN from "./arcgisTIN";
+import arcgisTIN from "./views/arcgisTIN";
+import AbstractView from "./views/abstractView";
+import ArcgisTinColor from "./views/arcgisTinChoropleth";
+import arcgisChoropleth from "./views/arcgisChoropleth";
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;
-    view: ArcgisView | LeafletView | Chorroleth | arcgisTIN;
+    view: AbstractView;
 
 
     onMapLoad(): void {
@@ -38,7 +41,7 @@ export default class AuroraPointsController {
         this.model = new AuroraPointsModel("points");
 
         this.model.loadPoints("epot").then(() => {
-            this.view = new arcgisTIN("map", () => this.onMapLoad());
+            this.view = new ArcgisTinColor("map", () => this.onMapLoad());
         }).catch((error) => {
             console.log(error);
         });
