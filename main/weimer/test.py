@@ -50,8 +50,8 @@ class AuroraCalculator:
     nlat: int
 
     def __init__(self):
-        self.latitudes = list(np.arange(-90, 90, 1, dtype=np.float))
-        self.longitudes = list(np.arange(0, 360, 5, dtype=np.float))
+        self.latitudes = list(np.arange(-90, 90+1, 1, dtype=np.float))
+        self.longitudes = list(np.arange(0, 360+1, 2.5, dtype=np.float))
         self.nlon = len(self.longitudes)
         self.nlat = len(self.latitudes)
 

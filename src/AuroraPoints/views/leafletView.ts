@@ -1,13 +1,14 @@
 //import {Map, Marker, Layer, LatLng, LayerGroup, Polyline, TileLayer} from "leaflet";
-import {AuroraPoint} from "./Model";
-import {FeatureCollection, MultiLineString} from "@turf/helpers";
+import {AuroraPoint} from "../Model";
+import {FeatureCollection, MultiLineString, Polygon} from "@turf/helpers";
+import AbstractView from "./abstractView";
 
 
 const eegeoKey = "94862e86a09f465f6a34f05d9dda0f48";
 
 declare var L:any;
 
-export default class LeafletView {
+export default class LeafletView extends AbstractView{
     map: any;
     pointsMarkers: any[];
     container: string;
@@ -15,6 +16,7 @@ export default class LeafletView {
     isolinesLayer: any;
 
     constructor(container: string, onLoad: () => void) {
+        super(container, onLoad)
         this.container = container;
         //const testLayer =  L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
@@ -43,7 +45,9 @@ export default class LeafletView {
         }
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string, isolines: FeatureCollection<MultiLineString>) {
+    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
+                 isolines: FeatureCollection<MultiLineString>,
+                 tins: FeatureCollection<Polygon>) {
         this.clearMap();
 
         this.markerLayer = L.layerGroup();
