@@ -4,7 +4,7 @@ import numpy as np
 
 # Data read from W05scEpot.dat or W05scBpot.dat:
 
-class Reader:
+class Reader(object):
     csize: int = 28  # const
     d1_pot: int = 15  # const
     d2_pot: int = 18  # const
@@ -63,7 +63,7 @@ class Reader:
                 for i in range(length_2dim):
                     result[i].append(col[i])
                 col = []
-            pass
+
         return result
 
     def read_potential(self, infile: str):
@@ -105,7 +105,6 @@ class Reader:
 
         file.close()
         print(f"file {infile} readed")
-        return
 
     def read_schatable(self, infile: str):
         file = open(infile)
@@ -120,9 +119,6 @@ class Reader:
                     col.extend([float(char) for char in file.readline().strip().split() if char != ''])
                 for k in range(self.d1_scha):
                     self.allnkm[k][j][i] = col[k]
-                    pass
-                pass
-            pass
 
         assert len(self.allnkm) == self.d1_scha, "d1_scha"
         assert all(map(lambda l: len(l) == self.d2_scha, self.allnkm)), "d2_scha"
@@ -132,7 +128,6 @@ class Reader:
 
         assert len(self.th0s) == self.d3_scha, "th0s"
         print(f"file {infile} readed")
-        return
 
     def read_bndy(self, infile: str):
         file = open(infile)
@@ -157,4 +152,3 @@ class Reader:
 
         file.close()
         print(f"file {infile} readed")
-        return

@@ -6,7 +6,7 @@ import numpy as np
 from .utils import interpol_quad, km_n
 
 
-class Calculator:
+class Calculator(object):
     reader: Reader = Reader()
 
     bndyfitr: float
@@ -25,7 +25,7 @@ class Calculator:
         В широта, долгота в градусах
         :param latin: широта в градусах
         :param lonin: долгато в традусах
-        :return:latout,lonout
+        :return:latout,lonout градусы
         """
 
         latr: float = radians(latin)
@@ -57,7 +57,7 @@ class Calculator:
         tlat: float
         tlon: float
 
-        lon: float = mlt * 15.
+        lon: float = mlt * 15.#координаты в градусах
         tlat, tlon = self.do_rotation(lat, lon)
         radii: float = 90. - tlat
 
@@ -145,21 +145,18 @@ class Calculator:
                 if skip:
                     skip = False
                     continue
-                    pass
+
                 self.nlms[j] = self.nkmlookup(ls[j], ms[j], th0)
                 tmp: List[float] = self.pm_n(ms[j], self.nlms[j], cth, self.tablesize)
                 for _i in range(self.tablesize):
                     self.plmtable[_i][j] = tmp[_i]
-                    pass
+
                 skip = False
 
                 if ms[j] != 0 and ab[j] > 0:
                     self.plmtable[0][j + 1] = self.plmtable[0][j]
                     self.nlms[j + 1] = self.nlms[j]
                     skip = True
-                    pass
-                pass  # end for
-            pass  # endif
 
         nlm: float = self.nlms[index]
         colata: List[float] = [colat]
@@ -183,7 +180,6 @@ class Calculator:
         csize = self.reader.csize
         re: float = 6371.2 + 110.  # km radius (allow default ht=110) радиус Земли?
 
-        m: int
         inside: int
 
         cfactor: float
@@ -210,7 +206,7 @@ class Calculator:
 
             if ls[j] >= 11:
                 break
-            # m = ms[j]
+
             if ab[j] == 1:
                 plm, nlm = self.scplm(j, colat)
                 plm = plm * (nlm * (nlm + 1.))
@@ -272,11 +268,11 @@ class Calculator:
     def setboundary(self, angle: float, bt: float, tilt: float, swvel: float, swden: float, file_path: str):
         """
         Инициализация модели: чтение констант из файла
-        :param angle:
-        :param bt:
-        :param tilt:
-        :param swvel:
-        :param swden:
+        :param angle: угол ? магнитого поля? градусы
+        :param bt: магнитное поле(?)
+        :param tilt:угол наклона(градусы) чего?
+        :param swvel:скорость соол. ветра
+        :param swden: плотность сол. ветра
         :param file_path: путь к папке с файлами
         :return:
         """
@@ -305,10 +301,7 @@ class Calculator:
         # endif
         x = [1., cos_teta, E_bt, E_bt * cos_teta, swvel, PSW]  # массив W формула (2) со страницы 3 пдф
         c = self.reader.bndya
-        self.bndyfitr = sum([x_i * c_i for x_i, c_i in zip(x,
-                                                           c)])  # R (1) стр 3 from Weimer-2005-Journal_of_Geophysical_Research%253A_Space_Physics_%25281978-2012%2529.pdf
-
-        return  # end func
+        self.bndyfitr = sum([x_i * c_i for x_i, c_i in zip(x, c)])  # R (1) стр 3 from Weimer-2005-Journal_of_Geophysical_Research%253A_Space_Physics_%25281978-2012%2529.pdf
 
     def setmodel(self, by: float, bz: float, tilt: float, swvel: float, swden: float, file_path: str,
                  model: str) -> None:
@@ -336,7 +329,7 @@ class Calculator:
         angle: float = degrees(atan2(by, bz))  # градусы
         self.setboundary(angle, bt, tilt, swvel, swden, file_path)
 
-        stilt: float = sin(degrees(tilt))
+        stilt: float = sin(radians(tilt))
         stilt2: float = stilt ** 2
 
         sw: float = bt * swvel / 1000.  # параметры солнечного ветра?
@@ -375,4 +368,3 @@ class Calculator:
             self.esphc = result
         else:
             self.bsphc = result
-        return

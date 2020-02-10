@@ -3,9 +3,9 @@ import json
 from http.client import HTTPResponse
 from typing import List, Dict
 from datetime import datetime
+from math import atan2, degrees
 
-
-class PlasmaInfo:
+class PlasmaInfo(object):
     """
     Информация о плазме солнечного ветра
     :speed - скорость км/с
@@ -32,7 +32,7 @@ class PlasmaInfo:
         return self.density * self.speed ** 2 * 1.6726e-6
 
 
-class MagInfo:
+class MagInfo(object):
     """
     Информация о магнтином поле
     :bx
@@ -51,6 +51,8 @@ class MagInfo:
     lat: float
     bt: float
 
+    angle:float
+
     def __init__(self, items: List[str]):
         self.bx = float(items[1])
         self.by = float(items[2])
@@ -59,8 +61,10 @@ class MagInfo:
         self.lat = float(items[5])
         self.bt = float(items[6])
 
+        self.angle: float = degrees(atan2(self.by, self.bz))  # градусы
 
-class Constants:
+
+class Constants(object):
     """
     :by
     :bz

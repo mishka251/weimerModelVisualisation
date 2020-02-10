@@ -1,7 +1,7 @@
 import AuroraPointsController from "./AuroraPoints/Controller";
 import $ from "jquery";
 
-$(document).ready(() => {
+$(() => {
 
     const controller: AuroraPointsController = new AuroraPointsController();
 
