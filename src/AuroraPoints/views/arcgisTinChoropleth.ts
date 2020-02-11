@@ -33,6 +33,7 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import SimpleRenderer from "esri/renderers/SimpleRenderer";
 import ColorVariable from "esri/renderers/visualVariables/ColorVariable";
 import AbstractView from "./abstractView";
+import esriConfig from "esri/config";
 
 export default class ArcgisTinColor extends AbstractView {
     map: Map;
@@ -44,6 +45,17 @@ export default class ArcgisTinColor extends AbstractView {
     isolines: FeatureLayer;
 
     constructor(container: string, onLoad: () => void) {
+
+        esriConfig.workers.loaderConfig = {
+            paths: {
+                //workerScripts: window.location.href.replace(/\/[^/]+$/, "/workerScripts"),
+                dojo: "https://ajax.googleapis.com/ajax/libs/dojo/1.11.2/dojo/"
+            },
+            has: {
+                "dojo-debug-messages": true
+            }
+        };
+
         super(container, onLoad);
         this.container = container;
         this.map = new Map({
@@ -120,7 +132,7 @@ export default class ArcgisTinColor extends AbstractView {
 
             const fillSymbol = new SimpleFillSymbol({
                 color: this.getColor(param, min, max),
-                outline:  {
+                outline: {
                     // autocasts as new SimpleLineSymbol()
                     color: this.getColor(param, min, max),
                     width: 1
@@ -260,6 +272,8 @@ export default class ArcgisTinColor extends AbstractView {
         // or arcade expression. The view and other properties determine
         // the appropriate default color scheme.
 
+        const black = new Color([0, 0, 0]);
+
 
         const colorParams2: colorCreateContinuousRendererParams = {
             layer: this.isolines,
@@ -268,15 +282,74 @@ export default class ArcgisTinColor extends AbstractView {
             view: this.view,
             theme: "high-to-low",
             symbolType: "3d-flat",
+            // @ts-ignore
+            colorScheme: {
+                id: "above-and-below/gray/div-blue-red",
+                colors: [new Color([255, 0, 0]), new Color([255, 127, 127]), new Color([255, 255, 255]), new Color([127, 127, 255]), new Color([0, 0, 255])],
+                noDataColor: black,
+                colorsForClassBreaks: [
+                    {
+                        colors: [new Color([255, 0, 0])],
+                        numClasses: 1
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 255, 255])],
+                        numClasses: 2
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 255, 255]),new Color( [0, 0, 255])],
+                        numClasses: 3
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([170, 0, 85]), new Color([85, 0, 170]), new Color([0, 0, 255])],
+                        numClasses: 4
+                    },
+                    {
+                        colors: [new Color([255, 0, 0]), new Color([255, 127, 127]), new Color([255, 255, 255]),new Color( [127, 127, 255]), new Color([0, 0, 255])],
+                        numClasses: 5
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 85, 85]), new Color([255, 170, 170]), new Color([255, 255, 255]), new Color([127, 127, 255]), new Color([0, 0, 255])],
+                        numClasses: 6
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 85, 85]), new Color([255, 170, 170]), new Color([255, 255, 255]), new Color([170, 170, 255]),new Color( [85, 85, 255]), new Color([0, 0, 255])],
+                        numClasses: 7
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]),new Color( [255, 255, 255]), new Color([170, 170, 255]), new Color([85, 85, 255]), new Color([0, 0, 255])],
+                        numClasses: 8
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]), new Color([255, 255, 255]), new Color([191, 191, 255]), new Color([127, 127, 255]), new Color([63, 63, 255]), new Color([0, 0, 255])],
+                        numClasses: 9
+                    }, {
+                        colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]), new Color([255, 255, 255]), new Color([204, 204, 255]), new Color([153, 153, 255]), new Color([102, 102, 255]), new Color([51, 51, 255]), new Color([0, 0, 255])],
+                        numClasses: 10
+                    }
+                ],
+                outline: {
+                    color: {r: 153, g: 153, b: 153, a: 0.25},
+                    width: "0.5px"
+                },
+                opacity: 0.8
+            }
+            // colorScheme: {
+            //     name:'test',
+            //     id:"test",
+            //      theme: "high-to-low",
+            //     tags:[],
+            //     colors:[ new Color('red'), new Color('green')],
+            //     noDataColor: new Color('black'),
+            // },
         };
+        //colorParams2.colorScheme.colors = [new Color('red'), new Color('green')];
 
         colorRendererCreator
             .createContinuousRenderer(colorParams2)
             .then<any>((rendererResult) => {
                 // set the renderer to the testLayer and add it to the map
                 //rendererResult = response;
+                console.log(colorParams2.colorScheme);
+                //console.log(colorParams2.colorScheme.colors);
 
-
+                console.log(rendererResult.colorScheme.colors);
+                // rendererResult.colorScheme.colors = [new Color('red'), new Color('green')];
+                // console.log(rendererResult.colorScheme.colors);
+                console.log(rendererResult);
                 this.isolines.renderer = rendererResult.renderer;
                 this.isolines.refresh();
 
@@ -336,7 +409,7 @@ export default class ArcgisTinColor extends AbstractView {
 
                 const changeEventHandler = () => {
                     //@ts-ignore
-                    const renderer = this.graphicLayer.renderer.clone();
+                    const renderer = this.isolines.renderer.clone();
                     const colorVariable = renderer.visualVariables[0].clone();
                     const outlineVariable = renderer.visualVariables[1];
                     colorVariable.stops = colorSlider.stops;

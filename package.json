@@ -23,7 +23,7 @@
     "tslint": "^5.20.1"
   },
   "devDependencies": {
-    "@arcgis/webpack-plugin": "^4.14.0",
+    "@arcgis/webpack-plugin": "^4.14.1",
     "@turf/turf": "^5.1.6",
     "@types/arcgis-js-api": "^4.14.0",
     "@types/jquery": "^3.3.31",

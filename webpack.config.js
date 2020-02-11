@@ -40,6 +40,22 @@ module.exports = {
     plugins: [new ArcGISPlugin(
         {
             locales: ["en", "ru"],
+            root: "./static/dist",
+            // exclude modules you do not need
+            //TODO настроить
+            userDefinedExcludes: [
+                "arcgis-js-api/layers/BingMapsLayer",
+                "arcgis-js-api/layers/CSVLayer",
+                "arcgis-js-api/layers/GeoRSSLayer",
+                "arcgis-js-api/layers/ImageryLayer",
+                "arcgis-js-api/layers/KMLLayer",
+                "arcgis-js-api/layers/MapImageLayer",
+                "arcgis-js-api/layers/OpenStreetMapLayer",
+                "arcgis-js-api/layers/StreamLayer",
+                "arcgis-js-api/layers/WMSLayer",
+                "arcgis-js-api/layers/WMTSLayer",
+                "arcgis-js-api/layers/WebTileLayer"
+            ]
         }
     ),
         new BundleTracker({filename: './webpack-stats.json'})
