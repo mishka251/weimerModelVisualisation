@@ -3,6 +3,12 @@ from typing import List
 
 
 def value_locate(vec: List[float], val: float) -> int:
+    """
+    Поиск в отсортированном массиве(почему линейный, а не бин поиск?)
+    :param vec: массив элементов
+    :param val: искомое значение
+    :return: i: vec[i] <= val <= vec[i + 1]
+    """
     if val < vec[0]:
         return -1
     if val > vec[-1]:
@@ -13,6 +19,13 @@ def value_locate(vec: List[float], val: float) -> int:
 
 
 def interpol_quad(v: List[float], x: List[float], u: List[float]) -> List[float]:
+    """
+    Интерполяция? Похоже на многочлен Лагранжа, но не совсем
+    :param v: ??
+    :param x: ??
+    :param u: ??
+    :return: ??
+    """
     nv: int = len(v)
     nx: int = len(x)
     nu: int = len(u)
@@ -39,8 +52,14 @@ def interpol_quad(v: List[float], x: List[float], u: List[float]) -> List[float]
 
 
 def lngamma(xx: float) -> float:
-    # This is an f90-python translation from C code copied from
-    # www.fizyka.umk.pl/nrbook/c6-1.pdf (numerical recipes gammln)
+    """
+    This is an f90-python translation from C code copied from
+    www.fizyka.umk.pl/nrbook/c6-1.pdf (numerical recipes gammln)
+    :param xx: ??
+    :return: ??
+    """
+    #
+    #
     x: float
     y: float
     tmp: float
@@ -63,6 +82,12 @@ def lngamma(xx: float) -> float:
 
 
 def km_n(m: int, rn: float) -> float:
+    """
+    ???
+    :param m:
+    :param rn:
+    :return:
+    """
     if m == 0:
         return 1
 
