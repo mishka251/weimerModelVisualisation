@@ -108,73 +108,9 @@ export default class ArcgisTinColor extends AbstractView {
                  isolines: FeatureCollection<MultiLineString>,
                  tins: FeatureCollection<turfPolygon>
     ) {
-        //  this.markerLayer.removeAll();
 
-
-        // for (const point of points) {
-        //     let val: number = point.value;
-        //
-        //
-        //     let color: Color = this.getColor(val, min, max);
-        //     const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
-        //         style: "circle",
-        //         color: color,
-        //         size: 6  // pixels
-        //     });
-        //
-        //
-        //     const latitudeFieldInfo: FieldInfo = new FieldInfo({
-        //         fieldName: "lat",
-        //         label: "latitude"
-        //     });
-        //
-        //     const longitudeFieldInfo: FieldInfo = new FieldInfo({
-        //         fieldName: "lng",
-        //         label: "longitude"
-        //     });
-        //
-        //     const valueFieldInfo: FieldInfo = new FieldInfo({
-        //         fieldName: "value",
-        //         label: "value"
-        //     });
-        //
-        //     const fieldInfos: FieldInfo[] = [latitudeFieldInfo, longitudeFieldInfo, valueFieldInfo];
-        //
-        //     const content: FieldsContent = new FieldsContent({
-        //         fieldInfos: fieldInfos
-        //     });
-        //
-        //     const contents: PopupContent[] = [content];
-        //
-        //     const popupTemplate: PopupTemplate = new PopupTemplate({
-        //         title: type + " point",
-        //         content: contents
-        //     });
-        //
-        //     let _point: Point = new Point(
-        //         {
-        //             latitude: point.latitude,
-        //             longitude: point.longitude
-        //         });
-        //
-        //     let graphics: Graphic = new Graphic({
-        //         geometry: _point,
-        //         symbol: symbol,
-        //         popupTemplate: popupTemplate,
-        //         attributes: {
-        //             lat: point.latitude,
-        //             lng: point.longitude,
-        //             value: point.value
-        //         }
-        //
-        //     });
-        //
-        //     this.markerLayer.add(graphics);
-        // }
 
         let polygons = tins.features.map<Graphic>((feature) => {
-            //console.log(feature.geometry.coordinates[0]);
-
             const polygon = new Polygon({
                 rings: feature.geometry.coordinates
             });
@@ -184,7 +120,7 @@ export default class ArcgisTinColor extends AbstractView {
 
             const fillSymbol = new SimpleFillSymbol({
                 color: this.getColor(param, min, max),
-                outline: {
+                outline:  {
                     // autocasts as new SimpleLineSymbol()
                     color: this.getColor(param, min, max),
                     width: 1

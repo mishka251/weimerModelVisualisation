@@ -23,13 +23,10 @@ def get_matr(request):
     min_v = 1e36
     for i in range(n):
         for j in range(m):
-            # if matr[i][j] == 1e36:
-            #    continue
-            val = matr[i][j] if matr[i][j] != 1e36 else None
-            obj = {'lng': x[i] - 180, 'lat': y[j], 'val': val}
-            if matr[i][j] != 1e36:
+            obj = {'lng': x[i] - 180, 'lat': y[j], 'val': matr[i][j]}
+            if matr[i][j] is not None:
                 max_v = max(max_v, matr[i][j])
-            min_v = min(min_v, matr[i][j])
+                min_v = min(min_v, matr[i][j])
             res.append(obj)
 
     return JsonResponse({'points': res, 'max': max_v, 'min': min_v})

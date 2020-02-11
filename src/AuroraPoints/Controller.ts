@@ -1,14 +1,13 @@
 import ArcgisView from "./views/arcgisView";
 import AuroraPointsModel from "./Model";
 import LeafletView from "./views/leafletView";
-import arcgisView from "./views/arcgisView";
 import leafletView from "./views/leafletView";
-import Chorroleth from "./views/arcgisChoropleth"
+import Chorroleth from "./views/arcgisChoropleth";
 //import {AuroraPoint} from "./Model";
-import arcgisTIN from "./views/arcgisTIN";
+import ArcgisTin from "./views/arcgisTIN";
 import AbstractView from "./views/abstractView";
 import ArcgisTinColor from "./views/arcgisTinChoropleth";
-import arcgisChoropleth from "./views/arcgisChoropleth";
+import ArcgisChoropleth from "./views/arcgisChoropleth";
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;
