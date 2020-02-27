@@ -26,6 +26,8 @@ import {
 import LineSymbol from "esri/symbols/LineSymbol3D";
 import AbstractView from "./abstractView";
 
+type Type = 'epot' | 'mpfac';
+
 export default class ArcgisView extends AbstractView {
     map: Map;
     markerLayer: GraphicsLayer;
@@ -55,7 +57,7 @@ export default class ArcgisView extends AbstractView {
                     color: [0, 0, 0, 0]
                 },
                 starsEnabled: false,
-                atmosphereEnabled: false,
+                atmosphereEnabled: false
             },
             highlightOptions: {
                 color: [255, 255, 0, 1],
@@ -79,22 +81,58 @@ export default class ArcgisView extends AbstractView {
     }
 
 
-    getColor(val: number, min: number, max: number): Color {
-        let rate = (val - min) / (max - min);
-        if (rate < 0.2) {
-            return new Color("blue");
+    getColor2(value: number, type: Type): Color {
+        const colors: Color[] = [
+            new Color([0, 0, 180, 0.9]),
+            new Color([0, 0, 255, 0.7]),
+            new Color([0, 255, 0, 0.5]),
+            new Color([255, 255, 0, 0.3]),
+            new Color("orange"),
+            new Color([255, 0, 0, 0.7]),
+            new Color([180, 0, 0, 0.9])
+        ];
+        const epotBreaks = [
+            -30,
+            -20,
+            -10,
+            10,
+            20,
+            30
+        ];
+
+        const mpfacBreaks = epotBreaks;
+
+        const breaks = type === "epot" ? epotBreaks : mpfacBreaks;
+
+        if (value < breaks[0]) {
+            return colors[0];
         }
-        if (rate < 0.4) {
-            return new Color("green");
+        for (let i = 1; i < breaks.length; i++) {
+            if (breaks[i - 1] <= value && value <= breaks[i]) {
+                return colors[i];
+            }
         }
-        if (rate < 0.6) {
-            return new Color("yellow");
-        }
-        if (rate < 0.8) {
-            return new Color("orange");
-        }
-        return new Color("red");
+
+        return colors[colors.length - 1];
+
     }
+
+    // getColor(val: number, min: number, max: number): Color {
+    //     let rate = (val - min) / (max - min);
+    //     if (rate < 0.2) {
+    //         return new Color("blue");
+    //     }
+    //     if (rate < 0.4) {
+    //         return new Color("green");
+    //     }
+    //     if (rate < 0.6) {
+    //         return new Color("yellow");
+    //     }
+    //     if (rate < 0.8) {
+    //         return new Color("orange");
+    //     }
+    //     return new Color("red");
+    // }
 
     renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
                  isolines: FeatureCollection<MultiLineString>,
@@ -106,7 +144,7 @@ export default class ArcgisView extends AbstractView {
             let val: number = point.value;
 
 
-            let color: Color = this.getColor(val, min, max);
+            let color: Color = this.getColor2(val, 'epot');
             const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
                 style: "circle",
                 color: color,
@@ -160,11 +198,11 @@ export default class ArcgisView extends AbstractView {
 
             });
 
-            this.markerLayer.add(graphics);
+            //this.markerLayer.add(graphics);
         }
 
         const polygons = tins.features.map<Graphic>((feature) => {
-            console.log(feature.geometry.coordinates[0]);
+            //console.log(feature.geometry.coordinates[0]);
 
             const polygon = new Polygon({
                 rings: feature.geometry.coordinates
@@ -175,11 +213,11 @@ export default class ArcgisView extends AbstractView {
 
             const fillSymbol = {
                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                color: this.getColor(param, min, max),
+                color: this.getColor2(param, "epot"),
                 outline: {
                     // autocasts as new SimpleLineSymbol()
-                    color: this.getColor(param, min, max),
-                    width: 1
+                    //color: this.getColor2(param, "epot"),
+                    width: 0
                 }
             };
             return new Graphic({
@@ -194,29 +232,29 @@ export default class ArcgisView extends AbstractView {
 
         polygons.forEach((polygon) => {
             this.isolines.add(polygon);
-        })
+        });
     }
 
-
-    switch_2d3d(use2d: boolean) {
-        const zoom: number = this.view.zoom;
-        const center: Point = this.view.center;
-
-        if (use2d) {
-            this.view = new MapView({
-                container: this.container,
-                map: this.map,
-                zoom: zoom,
-                center: center
-            });
-        } else {
-            this.view = new SceneView({
-                container: this.container,
-                map: this.map,
-                zoom: zoom,
-                center: center
-            });
-        }
-        this.view.constraints = this.constraints;
-    }
+    //
+    // switch_2d3d(use2d: boolean) {
+    //     const zoom: number = this.view.zoom;
+    //     const center: Point = this.view.center;
+    //
+    //     if (use2d) {
+    //         this.view = new MapView({
+    //             container: this.container,
+    //             map: this.map,
+    //             zoom: zoom,
+    //             center: center
+    //         });
+    //     } else {
+    //         this.view = new SceneView({
+    //             container: this.container,
+    //             map: this.map,
+    //             zoom: zoom,
+    //             center: center
+    //         });
+    //     }
+    //     this.view.constraints = this.constraints;
+    // }
 }

@@ -40,7 +40,7 @@ export default class AuroraPointsController {
         this.model = new AuroraPointsModel("points");
 
         this.model.loadPoints("epot").then(() => {
-            this.view = new ArcgisTinColor("map", () => this.onMapLoad());
+            this.view = new ArcgisTin("map", () => this.onMapLoad());
         }).catch((error) => {
             console.log(error);
         });
