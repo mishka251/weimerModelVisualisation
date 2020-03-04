@@ -56,8 +56,8 @@ export default class ArcgisView extends AbstractView {
                     type: "color",
                     color: [0, 0, 0, 0]
                 },
-                starsEnabled: false,
-                atmosphereEnabled: false
+                //starsEnabled: false,
+               // atmosphereEnabled: false
             },
             highlightOptions: {
                 color: [255, 255, 0, 1],
@@ -81,13 +81,13 @@ export default class ArcgisView extends AbstractView {
     }
 
 
-    getColor2(value: number, type: Type): Color {
+    getColor2(value: number, type: Type|string): Color {
         const colors: Color[] = [
             new Color([0, 0, 180, 0.9]),
             new Color([0, 0, 255, 0.7]),
             new Color([0, 255, 0, 0.5]),
             new Color([255, 255, 0, 0.3]),
-            new Color("orange"),
+            new Color([255, 200, 0, 0.5]),
             new Color([255, 0, 0, 0.7]),
             new Color([180, 0, 0, 0.9])
         ];
@@ -100,7 +100,14 @@ export default class ArcgisView extends AbstractView {
             30
         ];
 
-        const mpfacBreaks = epotBreaks;
+        const mpfacBreaks = [
+            -1,
+            -0.5,
+            -0.3,
+            0.3,
+            0.5,
+            1
+        ];
 
         const breaks = type === "epot" ? epotBreaks : mpfacBreaks;
 
@@ -144,7 +151,7 @@ export default class ArcgisView extends AbstractView {
             let val: number = point.value;
 
 
-            let color: Color = this.getColor2(val, 'epot');
+            let color: Color = this.getColor2(val, type);
             const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
                 style: "circle",
                 color: color,
@@ -213,7 +220,7 @@ export default class ArcgisView extends AbstractView {
 
             const fillSymbol = {
                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                color: this.getColor2(param, "epot"),
+                color: this.getColor2(param, type),
                 outline: {
                     // autocasts as new SimpleLineSymbol()
                     //color: this.getColor2(param, "epot"),
