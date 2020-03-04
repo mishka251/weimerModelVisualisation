@@ -41,7 +41,7 @@ export default class ArcgisView extends AbstractView {
         super(container, onLoad);
         this.container = container;
         this.map = new Map({
-            basemap: "gray"
+            basemap: "hybrid"
         });
         this.markerLayer = new GraphicsLayer();
         this.isolines = new GraphicsLayer();
@@ -49,22 +49,6 @@ export default class ArcgisView extends AbstractView {
         this.map.add(this.isolines);
 
         this.view = new SceneView({
-            //view = new MapView({
-            alphaCompositingEnabled: true,
-            environment: {
-                background: {
-                    type: "color",
-                    color: [0, 0, 0, 0]
-                },
-                //starsEnabled: false,
-               // atmosphereEnabled: false
-            },
-            highlightOptions: {
-                color: [255, 255, 0, 1],
-                haloColor: new Color("white"),
-                haloOpacity: 0.,
-                fillOpacity: 0.
-            },
             container: this.container,
             map: this.map,
             zoom: 5,
