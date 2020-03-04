@@ -32,9 +32,6 @@ export default class AuroraPointsController {
         });
     }
 
-    onChange2d_3d(use_2d: boolean) {
-        //this.view.switch_2d3d(use_2d);
-    }
 
     constructor() {
         this.model = new AuroraPointsModel("points");

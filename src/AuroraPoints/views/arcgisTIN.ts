@@ -225,27 +225,4 @@ export default class ArcgisView extends AbstractView {
             this.isolines.add(polygon);
         });
     }
-
-    //
-    // switch_2d3d(use2d: boolean) {
-    //     const zoom: number = this.view.zoom;
-    //     const center: Point = this.view.center;
-    //
-    //     if (use2d) {
-    //         this.view = new MapView({
-    //             container: this.container,
-    //             map: this.map,
-    //             zoom: zoom,
-    //             center: center
-    //         });
-    //     } else {
-    //         this.view = new SceneView({
-    //             container: this.container,
-    //             map: this.map,
-    //             zoom: zoom,
-    //             center: center
-    //         });
-    //     }
-    //     this.view.constraints = this.constraints;
-    // }
 }
