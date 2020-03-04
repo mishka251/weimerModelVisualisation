@@ -65,20 +65,28 @@ export default class ArcgisView extends AbstractView {
     }
 
 
-    getColor2(value: number, type: Type|string): Color {
+    getColor2(value: number, type: Type | string): Color {
         const colors: Color[] = [
-            new Color([0, 0, 180, 0.9]),
-            new Color([0, 0, 255, 0.7]),
-            new Color([0, 255, 0, 0.5]),
-            new Color([255, 255, 0, 0.3]),
-            new Color([255, 200, 0, 0.5]),
-            new Color([255, 0, 0, 0.7]),
-            new Color([180, 0, 0, 0.9])
+            new Color([255, 0, 255, 0.9]),
+            new Color([0, 0, 255, 0.8]),
+            new Color([0, 255, 255, 0.6]),
+            new Color([0, 255, 0, 0.4]),
+            new Color([0, 255, 0, 0.2]),
+            new Color([0, 255, 0, 0.0]),
+            new Color([0, 255, 0, 0.2]),
+            new Color([0, 255, 0, 0.4]),
+            new Color([255, 255, 0, 0.6]),
+            new Color([255, 165, 0, 0.8]),
+            new Color([255, 36, 0, 0.9])
         ];
         const epotBreaks = [
             -30,
             -20,
             -10,
+            -7,
+            -3,
+            3,
+            7,
             10,
             20,
             30
@@ -88,13 +96,18 @@ export default class ArcgisView extends AbstractView {
             -1,
             -0.5,
             -0.3,
+            -0.2,
+            -0.1,
+            0.1,
+            0.2,
             0.3,
             0.5,
             1
         ];
 
-        const breaks = type === "epot" ? epotBreaks : mpfacBreaks;
 
+        const breaks = type === "epot" ? epotBreaks : mpfacBreaks;
+        console.assert(colors.length == breaks.length + 1);
         if (value < breaks[0]) {
             return colors[0];
         }
