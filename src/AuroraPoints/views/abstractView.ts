@@ -1,4 +1,4 @@
-import {AuroraPoint} from "../Model";
+import AuroraPointsModel, {AuroraPoint} from "../Model";
 import {FeatureCollection, MultiLineString, Polygon as turfPolygon} from "@turf/helpers";
 
 export default abstract class AbstractView {
@@ -7,8 +7,5 @@ export default abstract class AbstractView {
 
     }
 
-    abstract renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
-                          isolines: FeatureCollection<MultiLineString>,
-                          tins: FeatureCollection<turfPolygon>
-    ): void ;
+    abstract renderPoints(model: AuroraPointsModel): void ;
 }

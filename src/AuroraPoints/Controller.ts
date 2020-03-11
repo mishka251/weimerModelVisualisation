@@ -1,7 +1,5 @@
 import ArcgisView from "./views/arcgisView";
 import AuroraPointsModel from "./Model";
-import LeafletView from "./views/leafletView";
-import leafletView from "./views/leafletView";
 import Chorroleth from "./views/arcgisChoropleth";
 //import {AuroraPoint} from "./Model";
 import ArcgisTin from "./views/arcgisTIN";
@@ -17,16 +15,12 @@ export default class AuroraPointsController {
     onMapLoad(): void {
         console.log("map load");
         console.log(this);
-        this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type,
-            this.model.isolines,
-            this.model.tins);
+        this.view.renderPoints(this.model);
     }
 
     onSwitchType(type: string) {
         this.model.loadPoints(type).then(() => {
-            this.view.renderPoints(this.model.points, this.model.min, this.model.max, this.model.type,
-                this.model.isolines,
-                this.model.tins);
+            this.view.renderPoints(this.model);
         }).catch((error) => {
             console.log(error);
         });

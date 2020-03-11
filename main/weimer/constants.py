@@ -108,6 +108,7 @@ class ConstantsTaken(Constants):
     Константы, получаемые с сервисов из сети
     """
     tilt: float = 0
+    time:datetime=None
 
     def __init__(self):
         base_url: str = "https://services.swpc.noaa.gov/products/solar-wind/"
@@ -154,5 +155,6 @@ class ConstantsTaken(Constants):
 
         self.swden = last_plasma.density
         self.swvel = last_plasma.speed
+        self.time=last_time
 
         # print(mag)

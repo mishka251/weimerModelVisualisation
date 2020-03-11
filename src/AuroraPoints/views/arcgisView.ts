@@ -19,8 +19,16 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import Polyline from "esri/geometry/Polyline";
 //import dojo from "dojo";
 
-import {AuroraPoint} from "../Model";
-import {FeatureCollection, point, feature, featureCollection, MultiLineString, Polygon} from "@turf/helpers";
+import AuroraPointsModel, {AuroraPoint} from "../Model";
+import {
+    FeatureCollection,
+    point,
+    feature,
+    featureCollection,
+    MultiLineString,
+    Polygon,
+    Polygon as turfPolygon
+} from "@turf/helpers";
 import LineSymbol from "esri/symbols/LineSymbol3D";
 import AbstractView from "./abstractView";
 
@@ -94,9 +102,15 @@ export default class ArcgisView extends  AbstractView{
         return new Color("red");
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
-                 isolines: FeatureCollection<MultiLineString>,
-    tins: FeatureCollection<Polygon>) {
+    renderPoints(model:AuroraPointsModel) {
+
+                const points: AuroraPoint[] = model.points;
+        const min: number = model.min;
+        const max: number = model.max;
+        const type: string = model.type;
+        const isolines: FeatureCollection<MultiLineString> = model.isolines;
+        const tins: FeatureCollection<turfPolygon> = model.tins;
+        const time: Date = model.time;
         this.markerLayer.removeAll();
         this.isolines.removeAll();
         for (const point of points) {

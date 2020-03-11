@@ -17,7 +17,7 @@ def get_matr(request):
 
     calucator = AuroraCalculator()
 
-    n, m, x, y, matr = calucator.calc_epot() if type == 'epot' else calucator.calc_mpfac()  # read_data(filename)
+    n, m, x, y, matr, time = calucator.calc_epot() if type == 'epot' else calucator.calc_mpfac()  # read_data(filename)
 
     res = []
     max_v = -1e36
@@ -32,4 +32,4 @@ def get_matr(request):
                 min_v = min(min_v, val)
             res.append(obj)
 
-    return JsonResponse({'points': res, 'max': max_v, 'min': min_v}, safe=False)
+    return JsonResponse({'points': res, 'max': max_v, 'min': min_v, 'time': time}, safe=False)

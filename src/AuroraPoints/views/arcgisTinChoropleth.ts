@@ -18,7 +18,7 @@ import colorCreateContinuousRendererParams = __esri.colorCreateContinuousRendere
 
 import Polygon from "esri/geometry/Polygon";
 import SimpleFillSymbol from "esri/symbols/SimpleFillSymbol";
-import {AuroraPoint} from "../Model";
+import AuroraPointsModel, {AuroraPoint} from "../Model";
 import {
     FeatureCollection,
     Polygon as turfPolygon,
@@ -116,11 +116,15 @@ export default class ArcgisTinColor extends AbstractView {
         return new Color("red");
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
-                 isolines: FeatureCollection<MultiLineString>,
-                 tins: FeatureCollection<turfPolygon>
-    ) {
+    renderPoints(model: AuroraPointsModel): void {
 
+        const points: AuroraPoint[] = model.points;
+        const min: number = model.min;
+        const max: number = model.max;
+        const type: string = model.type;
+        const isolines: FeatureCollection<MultiLineString> = model.isolines;
+        const tins: FeatureCollection<turfPolygon> = model.tins;
+        const time: Date = model.time;
 
         let polygons = tins.features.map<Graphic>((feature) => {
             const polygon = new Polygon({
@@ -295,23 +299,23 @@ export default class ArcgisTinColor extends AbstractView {
                         colors: [new Color([255, 0, 0]), new Color([255, 255, 255])],
                         numClasses: 2
                     }, {
-                        colors: [new Color([255, 0, 0]), new Color([255, 255, 255]),new Color( [0, 0, 255])],
+                        colors: [new Color([255, 0, 0]), new Color([255, 255, 255]), new Color([0, 0, 255])],
                         numClasses: 3
                     }, {
                         colors: [new Color([255, 0, 0]), new Color([170, 0, 85]), new Color([85, 0, 170]), new Color([0, 0, 255])],
                         numClasses: 4
                     },
                     {
-                        colors: [new Color([255, 0, 0]), new Color([255, 127, 127]), new Color([255, 255, 255]),new Color( [127, 127, 255]), new Color([0, 0, 255])],
+                        colors: [new Color([255, 0, 0]), new Color([255, 127, 127]), new Color([255, 255, 255]), new Color([127, 127, 255]), new Color([0, 0, 255])],
                         numClasses: 5
                     }, {
                         colors: [new Color([255, 0, 0]), new Color([255, 85, 85]), new Color([255, 170, 170]), new Color([255, 255, 255]), new Color([127, 127, 255]), new Color([0, 0, 255])],
                         numClasses: 6
                     }, {
-                        colors: [new Color([255, 0, 0]), new Color([255, 85, 85]), new Color([255, 170, 170]), new Color([255, 255, 255]), new Color([170, 170, 255]),new Color( [85, 85, 255]), new Color([0, 0, 255])],
+                        colors: [new Color([255, 0, 0]), new Color([255, 85, 85]), new Color([255, 170, 170]), new Color([255, 255, 255]), new Color([170, 170, 255]), new Color([85, 85, 255]), new Color([0, 0, 255])],
                         numClasses: 7
                     }, {
-                        colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]),new Color( [255, 255, 255]), new Color([170, 170, 255]), new Color([85, 85, 255]), new Color([0, 0, 255])],
+                        colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]), new Color([255, 255, 255]), new Color([170, 170, 255]), new Color([85, 85, 255]), new Color([0, 0, 255])],
                         numClasses: 8
                     }, {
                         colors: [new Color([255, 0, 0]), new Color([255, 63, 63]), new Color([255, 127, 127]), new Color([255, 191, 191]), new Color([255, 255, 255]), new Color([191, 191, 255]), new Color([127, 127, 255]), new Color([63, 63, 255]), new Color([0, 0, 255])],

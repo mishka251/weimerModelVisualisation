@@ -25,24 +25,24 @@ class AuroraCalculator(object):
 
         epot = np.zeros((self.nlon, self.nlat), np.float)
         calc = Calculator()
-        consts: Constants = ConstantsTaken()
+        consts: ConstantsTaken = ConstantsTaken()
         calc.setmodel(consts.by, consts.bz, consts.tilt, consts.swvel, consts.swden, file_path, 'epot')
         mlt = [lon / 15 for lon in self.longitudes]
         for i in range(self.nlon):
             for j in range(self.nlat):
                 epot[i][j] = calc.epotval(self.latitudes[j], mlt[i], fill)
 
-        return self.nlon, self.nlat, self.longitudes, self.latitudes, epot
+        return self.nlon, self.nlat, self.longitudes, self.latitudes, epot, consts.time
 
     def calc_mpfac(self) -> Tuple:
 
         mpfac = np.zeros((self.nlon, self.nlat), np.float)
         calc = Calculator()
-        consts: Constants = ConstantsTaken()
+        consts: ConstantsTaken = ConstantsTaken()
         calc.setmodel(consts.by, consts.bz, consts.tilt, consts.swvel, consts.swden, file_path, 'bpot')
         mlt = [lon / 15 for lon in self.longitudes]
         for i in range(self.nlon):
             for j in range(self.nlat):
                 mpfac[i][j] = calc.mpfac(self.latitudes[j], mlt[i], fill)
 
-        return self.nlon, self.nlat, self.longitudes, self.latitudes, mpfac
+        return self.nlon, self.nlat, self.longitudes, self.latitudes, mpfac, consts.time

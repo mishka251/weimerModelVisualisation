@@ -21,10 +21,12 @@ interface IServerResponse {
     points: IServerValue[];
     min: number;
     max: number;
+    time: string;
 }
 
 export default class AuroraPointsModel {
     public points: AuroraPoint[];
+    public time: Date;
     public url: string;
 
     public max: number;
@@ -54,6 +56,8 @@ export default class AuroraPointsModel {
                     this.max = result.max;
                     this.type = type;
 
+                    this.time = new Date(Date.parse(result.time));
+                    console.log(this.time);
                     for (const point of result.points) {
                         this.points.push({
                             latitude: point.lat,

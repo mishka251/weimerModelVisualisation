@@ -6,8 +6,8 @@ import * as colorRendererCreator from "esri/renderers/smartMapping/creators/colo
 import histogram from "esri/renderers/smartMapping/statistics/histogram";
 import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
 import * as watchUtils from "esri/core/watchUtils";
-import {AuroraPoint} from "../Model";
-import {FeatureCollection, MultiLineString, Polygon} from "@turf/helpers";
+import AuroraPointsModel, {AuroraPoint} from "../Model";
+import {FeatureCollection, MultiLineString, Polygon as turfPolygon, Polygon} from "@turf/helpers";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
 import Color from "esri/Color";
 import SimpleMarkerSymbol from "esri/symbols/SimpleMarkerSymbol";
@@ -64,9 +64,15 @@ export default class Chorroleth extends AbstractView {
         return new Color("red");
     }
 
-    renderPoints(points: AuroraPoint[], min: number, max: number, type: string,
-                 isolines: FeatureCollection<MultiLineString>,
-                 tins: FeatureCollection<Polygon>) {
+    renderPoints(model:AuroraPointsModel) {
+
+                const points: AuroraPoint[] = model.points;
+        const min: number = model.min;
+        const max: number = model.max;
+        const type: string = model.type;
+        const isolines: FeatureCollection<MultiLineString> = model.isolines;
+        const tins: FeatureCollection<turfPolygon> = model.tins;
+        const time: Date = model.time;
 
         console.log("start render");
         const arr_graphics: Graphic[] = [];
