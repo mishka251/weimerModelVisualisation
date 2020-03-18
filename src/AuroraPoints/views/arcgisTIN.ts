@@ -18,7 +18,7 @@ import Camera from "esri/Camera";
 import Polygon from "esri/geometry/Polygon";
 import Legend from "esri/widgets/Legend";
 import ColorStop from "esri/renderers/visualVariables/support/ColorStop";
-
+import DirectLineMeasurement3D from "esri/widgets/DirectLineMeasurement3D";
 import {AuroraPoint} from "../Model";
 import {
     FeatureCollection,
@@ -27,11 +27,13 @@ import {
 } from "@turf/helpers";
 import LineSymbol from "esri/symbols/LineSymbol3D";
 import AbstractView from "./abstractView";
-import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
+//import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
 
 import AuroraPointsModel from "../Model";
 
 type Type = 'epot' | 'mpfac';
+
+import ColorBar from "../../components/colorBar.vue";
 
 export default class ArcgisView extends AbstractView {
     map: Map;
@@ -42,6 +44,7 @@ export default class ArcgisView extends AbstractView {
     camera: Camera;
 
     isolines: GraphicsLayer;
+    colorBar: ColorBar;
 
     readonly colors: Color[] = [
         new Color([225, 0, 225, 0.9]),
@@ -85,8 +88,18 @@ export default class ArcgisView extends AbstractView {
     constructor(container: string, onLoad: () => void) {
         super(container, onLoad);
         this.container = container;
+
+        this.colorBar = new ColorBar({
+            el: "#sliderDiv",
+            propsData: {
+                colors: [],
+                breaks: []
+            }
+        });
+
         this.map = new Map({
-            basemap: "hybrid"
+            basemap: "hybrid",
+            ground: "world-elevation",
         });
         //  this.markerLayer = new GraphicsLayer();
         this.isolines = new GraphicsLayer();
@@ -110,9 +123,21 @@ export default class ArcgisView extends AbstractView {
             map: this.map,
             zoom: 5,
             camera: this.camera,
+            qualityProfile: "high",
+            alphaCompositingEnabled: true,
+            highlightOptions: {
+                fillOpacity: 0,
+                color: "#ffffff"
+            },
             //center: [54.7249, 55.9425]
         });
 
+        this.view.ui.empty('top-left');
+
+        const measure3d = new DirectLineMeasurement3D({
+            view:this.view
+        });
+        this.view.ui.add(measure3d, 'top-right');
         this.constraints = {
             minZoom: 3
         };
@@ -274,26 +299,27 @@ export default class ArcgisView extends AbstractView {
         });
 
         const breaks = type === "epot" ? this.epotBreaks : this.mpfacBreaks;
-        const stops: ColorStop[] = [];
-        for (let i = 0; i < breaks.length; i++) {
-            stops.push(new ColorStop({
-                color: this.colors[i],
-                label: 'No label',
-                value: breaks[i]
-            }));
+
+
+        const visibleBreaks: number[] = [];
+        const visibleColor: Color[] = [this.colors[0]];
+        for (let i = 1; i < this.colors.length; i++) {
+            // stops.push(new ColorStop({
+            //     color: this.colors[i],
+            //     label: 'No label',
+            //     value: breaks[i]
+            // }));
+            if (this.colors[i].a > 0.3) {
+                visibleBreaks.push(breaks[i - 1]);
+                visibleColor.push(this.colors[i]);
+            }
         }
+        this.colorBar.$set(this.colorBar, 'breaks', visibleBreaks);
+        this.colorBar.$set(this.colorBar, 'colors', visibleColor);
 
+        // console.log(slider);
 
-        const slider = new ColorSlider({
-            container: "sliderDiv",
-            min: min,
-            max: max,
-            stops: stops
-        });
-
-        console.log(slider);
-
-        this.view.ui.add(slider, 'bottomleft');
+        // this.view.ui.add(slider, 'bottomleft');
         polygons.filter((polygon) => {
             return polygon != null;
         });
