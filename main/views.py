@@ -8,7 +8,7 @@ import numpy as np
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'weimer_index.html')
 
 
 def get_matr(request):
