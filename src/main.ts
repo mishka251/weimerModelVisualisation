@@ -1,7 +1,7 @@
 import AuroraPointsController from './AuroraPoints/Controller';
 import $ from 'jquery';
 
-//require('dojo');
+
 import esriConfig from "esri/config";
 
 // Set worker's AMD loader configuration to set up

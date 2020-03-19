@@ -1,11 +1,7 @@
-import ArcgisView from "./views/arcgisView";
+
 import AuroraPointsModel from "./Model";
-import Chorroleth from "./views/arcgisChoropleth";
-//import {AuroraPoint} from "./Model";
 import ArcgisTin from "./views/arcgisTIN";
 import AbstractView from "./views/abstractView";
-import ArcgisTinColor from "./views/arcgisTinChoropleth";
-import ArcgisChoropleth from "./views/arcgisChoropleth";
 
 export default class AuroraPointsController {
     model: AuroraPointsModel;

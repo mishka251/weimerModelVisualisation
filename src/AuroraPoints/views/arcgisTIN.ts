@@ -1,33 +1,19 @@
 import Map from "esri/Map";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
 import SceneView from "esri/views/SceneView";
-import MapView from "esri/views/MapView";
-import Point from "esri/geometry/Point";
 import Graphic from "esri/Graphic";
-import MapViewConstraints = __esri.MapViewConstraints;
-
-import SimpleMarkerSymbol from "esri/symbols/SimpleMarkerSymbol";
 import Color from "esri/Color";
-import PopupTemplate from "esri/PopupTemplate";
 
-import FieldInfo from "esri/popup/FieldInfo";
-import PopupContent from "esri/popup/content/Content";
-import FieldsContent from "esri/popup/content/FieldsContent";
 
 import Camera from "esri/Camera";
 import Polygon from "esri/geometry/Polygon";
-import Legend from "esri/widgets/Legend";
-import ColorStop from "esri/renderers/visualVariables/support/ColorStop";
 import DirectLineMeasurement3D from "esri/widgets/DirectLineMeasurement3D";
-import {AuroraPoint} from "../Model";
 import {
     FeatureCollection,
     Polygon as turfPolygon,
-    MultiLineString
+    Feature
 } from "@turf/helpers";
-import LineSymbol from "esri/symbols/LineSymbol3D";
 import AbstractView from "./abstractView";
-//import ColorSlider from "esri/widgets/smartMapping/ColorSlider";
 
 import AuroraPointsModel from "../Model";
 
@@ -37,9 +23,7 @@ import ColorBar from "../../components/colorBar.vue";
 
 export default class ArcgisView extends AbstractView {
     map: Map;
-    // markerLayer: GraphicsLayer;
     view: SceneView;
-    constraints: MapViewConstraints;
     container: string;
     camera: Camera;
 
@@ -101,9 +85,7 @@ export default class ArcgisView extends AbstractView {
             basemap: "hybrid",
             ground: "world-elevation",
         });
-        //  this.markerLayer = new GraphicsLayer();
         this.isolines = new GraphicsLayer();
-        // this.map.add(this.markerLayer);
         this.map.add(this.isolines);
 
         this.camera = new Camera({
@@ -113,8 +95,6 @@ export default class ArcgisView extends AbstractView {
                 z: 20_000_000,
                 hasZ: true,
             },
-            // tilt:45,
-            //heading:90,
 
         });
 
@@ -129,7 +109,6 @@ export default class ArcgisView extends AbstractView {
                 fillOpacity: 0,
                 color: "#ffffff"
             },
-            //center: [54.7249, 55.9425]
         });
 
         this.view.ui.empty('top-left');
@@ -138,20 +117,6 @@ export default class ArcgisView extends AbstractView {
             view:this.view
         });
         this.view.ui.add(measure3d, 'top-right');
-        this.constraints = {
-            minZoom: 3
-        };
-
-        // const legent = new Legend({
-        //     view: this.view,
-        //     layerInfos: [{
-        //         layer: this.isolines,
-        //         title: 'Legend'
-        //     }]
-        // });
-
-        //this.view.ui.add(legent, 'bottomleft');
-        this.view.constraints = this.constraints;
 
         this.view.when()
             .then(onLoad);
@@ -159,7 +124,6 @@ export default class ArcgisView extends AbstractView {
 
 
     getColor2(value: number, type: Type | string): Color {
-
 
         const breaks = type === "epot" ? this.epotBreaks : this.mpfacBreaks;
         console.assert(this.colors.length == breaks.length + 1);
@@ -172,34 +136,13 @@ export default class ArcgisView extends AbstractView {
             }
         }
 
-
         return this.colors[this.colors.length - 1];
 
     }
 
-    // getColor(val: number, min: number, max: number): Color {
-    //     let rate = (val - min) / (max - min);
-    //     if (rate < 0.2) {
-    //         return new Color("blue");
-    //     }
-    //     if (rate < 0.4) {
-    //         return new Color("green");
-    //     }
-    //     if (rate < 0.6) {
-    //         return new Color("yellow");
-    //     }
-    //     if (rate < 0.8) {
-    //         return new Color("orange");
-    //     }
-    //     return new Color("red");
-    // }
 
     renderPoints(model: AuroraPointsModel) {
-        const points: AuroraPoint[] = model.points;
-        const min: number = model.min;
-        const max: number = model.max;
         const type: string = model.type;
-        const isolines: FeatureCollection<MultiLineString> = model.isolines;
         const tins: FeatureCollection<turfPolygon> = model.tins;
         const time: Date = model.time;
 
@@ -209,72 +152,9 @@ export default class ArcgisView extends AbstractView {
         const cameraLatitude: number = deltaLongitude >= 0 ? deltaLongitude : 360 + deltaLongitude;
         this.camera.position.longitude = cameraLatitude;
         this.view.goTo(this.camera);
-        console.log(this.view.camera.position);
-        // this.markerLayer.removeAll();
-        this.isolines.removeAll();
-        for (const point of points) {
-            let val: number = point.value;
 
 
-            let color: Color = this.getColor2(val, type);
-            const symbol: SimpleMarkerSymbol = new SimpleMarkerSymbol({
-                style: "circle",
-                color: color,
-                size: 6  // pixels
-            });
-
-
-            const latitudeFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "lat",
-                label: "latitude"
-            });
-
-            const longitudeFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "lng",
-                label: "longitude"
-            });
-
-            const valueFieldInfo: FieldInfo = new FieldInfo({
-                fieldName: "value",
-                label: "value"
-            });
-
-            const fieldInfos: FieldInfo[] = [latitudeFieldInfo, longitudeFieldInfo, valueFieldInfo];
-
-            const content: FieldsContent = new FieldsContent({
-                fieldInfos: fieldInfos
-            });
-
-            const contents: PopupContent[] = [content];
-
-            const popupTemplate: PopupTemplate = new PopupTemplate({
-                title: type + " point",
-                content: contents
-            });
-
-            let _point: Point = new Point(
-                {
-                    latitude: point.latitude,
-                    longitude: point.longitude
-                });
-
-            let graphics: Graphic = new Graphic({
-                geometry: _point,
-                symbol: symbol,
-                popupTemplate: popupTemplate,
-                attributes: {
-                    lat: point.latitude,
-                    lng: point.longitude,
-                    value: point.value
-                }
-
-            });
-
-            //this.markerLayer.add(graphics);
-        }
-
-        const polygons = tins.features.map<Graphic>((feature) => {
-            //console.log(feature.geometry.coordinates[0]);
+        let polygons = tins.features.map<Graphic>((feature:Feature<turfPolygon>) => {
 
             const polygon = new Polygon({
                 rings: feature.geometry.coordinates
@@ -284,11 +164,9 @@ export default class ArcgisView extends AbstractView {
             const param = (feature.properties.a + feature.properties.b + feature.properties.c) / 3;
 
             const fillSymbol = {
-                type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                type: "simple-fill",
                 color: this.getColor2(param, type),
                 outline: {
-                    // autocasts as new SimpleLineSymbol()
-                    //color: this.getColor2(param, "epot"),
                     width: 0
                 }
             };
@@ -304,11 +182,6 @@ export default class ArcgisView extends AbstractView {
         const visibleBreaks: number[] = [];
         const visibleColor: Color[] = [this.colors[0]];
         for (let i = 1; i < this.colors.length; i++) {
-            // stops.push(new ColorStop({
-            //     color: this.colors[i],
-            //     label: 'No label',
-            //     value: breaks[i]
-            // }));
             if (this.colors[i].a > 0.3) {
                 visibleBreaks.push(breaks[i - 1]);
                 visibleColor.push(this.colors[i]);
@@ -317,10 +190,7 @@ export default class ArcgisView extends AbstractView {
         this.colorBar.$set(this.colorBar, 'breaks', visibleBreaks);
         this.colorBar.$set(this.colorBar, 'colors', visibleColor);
 
-        // console.log(slider);
-
-        // this.view.ui.add(slider, 'bottomleft');
-        polygons.filter((polygon) => {
+       polygons = polygons.filter((polygon) => {
             return polygon != null;
         });
 

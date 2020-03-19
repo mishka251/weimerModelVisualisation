@@ -13,7 +13,7 @@ module.exports = {
     // entry: './assets/js/index',
     output: {
         path: path.resolve('./static/dist/'),
-        filename: "[name]-[hash].js",
+        filename: "[name].js",
         publicPath: "/static/dist/"
     },
     module: {
