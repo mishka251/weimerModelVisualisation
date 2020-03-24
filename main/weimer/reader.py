@@ -104,7 +104,7 @@ class Reader(object):
         self.schfits = self.read_2dim_array(file, self.csize, self.d1_pot, float)  # []
 
         file.close()
-        print(f"file {infile} readed")
+        #print(f"file {infile} readed")
 
     def read_schatable(self, infile: str):
         file = open(infile)
@@ -127,7 +127,7 @@ class Reader(object):
         self.th0s = self.read_1dim_array(file, self.d3_scha, float)
 
         assert len(self.th0s) == self.d3_scha, "th0s"
-        print(f"file {infile} readed")
+        #print(f"file {infile} readed")
 
     def read_bndy(self, infile: str):
         file = open(infile)
@@ -151,4 +151,4 @@ class Reader(object):
         assert len(self.ex_bndy) == 2
 
         file.close()
-        print(f"file {infile} readed")
+        #print(f"file {infile} readed")
