@@ -1,8 +1,9 @@
+import numpy as np
 from math import pi, sqrt, atan2, radians, degrees, sin, exp, cos, asin
+import os
 from typing import List, Tuple
 
 from .reader import Reader
-import numpy as np
 from .utils import interpol_quad, km_n
 
 
@@ -57,7 +58,7 @@ class Calculator(object):
         tlat: float
         tlon: float
 
-        lon: float = mlt * 15.#координаты в градусах
+        lon: float = mlt * 15.  # координаты в градусах
         tlat, tlon = self.do_rotation(lat, lon)
         radii: float = 90. - tlat
 
@@ -276,7 +277,7 @@ class Calculator(object):
         :param file_path: путь к папке с файлами
         :return:
         """
-        self.reader.read_bndy(file_path + '//W05scBndy.dat')
+        self.reader.read_bndy(os.path.join(file_path, 'W05scBndy.dat'))
 
         # Calculate the transformation matrix to the coordinate system
         # of the offset pole.
@@ -301,7 +302,8 @@ class Calculator(object):
         # endif
         x = [1., cos_teta, E_bt, E_bt * cos_teta, swvel, PSW]  # массив W формула (2) со страницы 3 пдф
         c = self.reader.bndya
-        self.bndyfitr = sum([x_i * c_i for x_i, c_i in zip(x, c)])  # R (1) стр 3 from Weimer-2005-Journal_of_Geophysical_Research%253A_Space_Physics_%25281978-2012%2529.pdf
+        self.bndyfitr = sum([x_i * c_i for x_i, c_i in zip(x,
+                                                           c)])  # R (1) стр 3 from Weimer-2005-Journal_of_Geophysical_Research%253A_Space_Physics_%25281978-2012%2529.pdf
 
     def setmodel(self, by: float, bz: float, tilt: float, swvel: float, swden: float, file_path: str,
                  model: str) -> None:
@@ -319,11 +321,11 @@ class Calculator(object):
         assert model.strip() in ['epot', 'bpot'], "('>>> setmodel: model must be either epot or bpot')"
 
         if model.strip() == 'epot':
-            self.reader.read_potential(file_path + '//W05scEpot.dat')
+            self.reader.read_potential(os.path.join(file_path, 'W05scEpot.dat'))
         else:
-            self.reader.read_potential(file_path + '//W05scBpot.dat')
+            self.reader.read_potential(os.path.join(file_path, 'W05scBpot.dat'))
 
-        self.reader.read_schatable(file_path + '//SCHAtable.dat')
+        self.reader.read_schatable(os.path.join(file_path, 'SCHAtable.dat'))
 
         bt: float = sqrt(by ** 2 + bz ** 2)
         angle: float = degrees(atan2(by, bz))  # градусы

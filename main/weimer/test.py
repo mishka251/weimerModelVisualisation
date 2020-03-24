@@ -1,10 +1,10 @@
 import numpy as np
+import os
 from .w05sc import Calculator
 from typing import List, Tuple
 from .constants import Constants, ConstantsStatic, ConstantsTaken
 
-
-file_path = "./main/weimer//input_data"
+file_path = os.path.join('main', 'weimer', 'input_data')
 
 fill = None
 
@@ -16,8 +16,8 @@ class AuroraCalculator(object):
     nlat: int
 
     def __init__(self):
-        self.latitudes = list(np.arange(-90, 90+1, 1, dtype=np.float))
-        self.longitudes = list(np.arange(0, 360+1, 2.5, dtype=np.float))
+        self.latitudes = list(np.arange(-90, 90 + 1, 1, dtype=np.float))
+        self.longitudes = list(np.arange(0, 360 + 1, 2.5, dtype=np.float))
         self.nlon = len(self.longitudes)
         self.nlat = len(self.latitudes)
 
