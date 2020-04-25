@@ -4,6 +4,7 @@ import SceneView from "esri/views/SceneView";
 import Graphic from "esri/Graphic";
 import Color from "esri/Color";
 
+import SimpleFillSymbol from "esri/symbols/SimpleFillSymbol";
 
 import Camera from "esri/Camera";
 import Polygon from "esri/geometry/Polygon";
@@ -44,33 +45,35 @@ export default class ArcgisView extends AbstractView {
         new Color([255, 36, 0, 0.9])
     ];
     readonly epotBreaks = [
+        -100,
         -30,
-        -20,
         -10,
-        -7,
-        -3,
-        3,
-        7,
+        -5,
+        -1,
+        1,
+        5,
         10,
-        20,
-        30
+        30,
+        100
     ];
 
     readonly mpfacBreaks = [
-        -1,
+        -3,
         -0.5,
-        -0.3,
-        -0.2,
         -0.1,
+        -0.05,
+        -0.01,
+        0.01,
+        0.05,
         0.1,
-        0.2,
-        0.3,
         0.5,
-        1
+        3
     ];
 
     constructor(container: string, onLoad: () => void) {
+
         super(container, onLoad);
+
         this.container = container;
 
         this.colorBar = new ColorBar({
@@ -80,14 +83,23 @@ export default class ArcgisView extends AbstractView {
                 breaks: []
             }
         });
-
+        console.log("after vue");
+        //@ts-ignore
+        console.timeLog("time");
         this.map = new Map({
             basemap: "hybrid",
             ground: "world-elevation",
         });
+
+        console.log("after map");
+        //@ts-ignore
+        console.timeLog("time");
+
         this.isolines = new GraphicsLayer();
         this.map.add(this.isolines);
-
+        console.log("after add layer");
+        //@ts-ignore
+        console.timeLog("time");
         this.camera = new Camera({
             position: {
                 latitude: 89,
@@ -111,15 +123,27 @@ export default class ArcgisView extends AbstractView {
             },
         });
 
+        console.log("after view");
+        //@ts-ignore
+        console.timeLog("time");
+
         this.view.ui.empty('top-left');
 
         const measure3d = new DirectLineMeasurement3D({
-            view:this.view
+            view: this.view
         });
         this.view.ui.add(measure3d, 'top-right');
 
+        console.log("after change view.ui");
+        //@ts-ignore
+        console.timeLog("time");
+
         this.view.when()
             .then(onLoad);
+
+        console.log("end constr");
+        //@ts-ignore
+        console.timeLog("time");
     }
 
 
@@ -142,6 +166,10 @@ export default class ArcgisView extends AbstractView {
 
 
     renderPoints(model: AuroraPointsModel) {
+        console.log("render start");
+        //@ts-ignore
+        console.timeLog("time");
+
         const type: string = model.type;
         const tins: FeatureCollection<turfPolygon> = model.tins;
         const time: Date = model.time;
@@ -152,29 +180,36 @@ export default class ArcgisView extends AbstractView {
         const cameraLatitude: number = deltaLongitude >= 0 ? deltaLongitude : 360 + deltaLongitude;
         this.camera.position.longitude = cameraLatitude;
         this.view.goTo(this.camera);
+        this.isolines.removeAll();
 
-
-        let polygons = tins.features.map<Graphic>((feature:Feature<turfPolygon>) => {
+        console.log("before polygons");
+        //@ts-ignore
+        console.timeLog("time");
+        console.log(tins);
+        let polygons = tins.features.map<Graphic>((feature: Feature<turfPolygon>) => {
 
             const polygon = new Polygon({
                 rings: feature.geometry.coordinates
             });
 
-
             const param = (feature.properties.a + feature.properties.b + feature.properties.c) / 3;
 
-            const fillSymbol = {
-                type: "simple-fill",
+            const fillSymbol: SimpleFillSymbol = new SimpleFillSymbol({
                 color: this.getColor2(param, type),
                 outline: {
                     width: 0
                 }
-            };
+            });
+
             return new Graphic({
                 geometry: polygon,
                 symbol: fillSymbol
             });
         });
+
+        console.log("polygons");
+        //@ts-ignore
+        console.timeLog("time");
 
         const breaks = type === "epot" ? this.epotBreaks : this.mpfacBreaks;
 
@@ -187,15 +222,25 @@ export default class ArcgisView extends AbstractView {
                 visibleColor.push(this.colors[i]);
             }
         }
+
+        visibleBreaks.reverse();
+        visibleColor.reverse();
+
         this.colorBar.$set(this.colorBar, 'breaks', visibleBreaks);
         this.colorBar.$set(this.colorBar, 'colors', visibleColor);
 
-       polygons = polygons.filter((polygon) => {
+        console.log("load colors");
+        //@ts-ignore
+        console.timeLog("time");
+
+        polygons = polygons.filter((polygon) => {
             return polygon != null;
         });
+        this.isolines.addMany(polygons);
 
-        polygons.forEach((polygon) => {
-            this.isolines.add(polygon);
-        });
+
+        console.log("polygons loaded");
+        //@ts-ignore
+        console.timeLog("time");
     }
 }

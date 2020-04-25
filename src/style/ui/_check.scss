@@ -1,0 +1,221 @@
+@import "~bootstrap/scss/bootstrap";
+
+.ui-check-element {
+    position: relative;
+    display: flex;
+    min-height: $font-size-base * $line-height-base;
+    padding-left: $custom-control-gutter + $custom-control-indicator-size;
+    width: max-content;
+
+    label {
+        margin-bottom: 0;
+    }
+
+    &__input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+
+        &:focus + .ui-check-element__label:before {
+            border: 1px solid $accent;
+        }
+
+        &:checked + .ui-check-element__label:after {
+            transform: scale(1);
+        }
+    }
+
+    .ui-check-element__label {
+        position: relative;
+        vertical-align: top;
+
+        cursor: pointer;
+        //width: max-content;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        &:before {
+            cursor: pointer;
+            transition: .2s;
+
+            position: absolute;
+            top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2;
+            left: -($custom-control-gutter + $custom-control-indicator-size);
+            display: block;
+            width: $custom-control-indicator-size;
+            height: $custom-control-indicator-size;
+            content: "";
+            pointer-events: all;
+            background: $white;
+            border: 1px solid $gray-400;
+        }
+
+        &:after {
+            content: "";
+            top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2;
+            left: -($custom-control-gutter + $custom-control-indicator-size);
+            display: block;
+            position: absolute;
+            width: $custom-control-indicator-size;
+            height: $custom-control-indicator-size;
+            background: no-repeat 50% / #{$custom-control-indicator-bg-size};
+
+            transition: .2s;
+        }
+    }
+}
+
+.ui-checkbox {
+    &_md {
+        min-height: $font-size-base * $line-height-base * $check-size-md;
+        padding-left: ($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+
+        .ui-check-element__label {
+            min-height: $font-size-base * $line-height-base * $check-size-md;
+
+            &::before {
+                width: $custom-control-indicator-size * $check-size-md;
+                height: $custom-control-indicator-size * $check-size-md;
+                top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 * $check-size-md;
+                left: -($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+            }
+
+            &::after {
+                width: $custom-control-indicator-size * $check-size-md;
+                height: $custom-control-indicator-size *$check-size-md;
+                top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 * $check-size-md;
+                left: -($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+                background-size: 70%;
+            }
+        }
+    }
+
+    .ui-check-element__label {
+
+        &::before {
+        }
+
+        &::after {
+
+
+            background: url(../img/check-icon.svg) center center no-repeat;
+            background-size: 70%;
+            transform: scale(0);
+        }
+    }
+}
+
+.ui-switch {
+    padding-left: $custom-switch-width + $custom-control-gutter;
+
+    &.ui-switch_md {
+        min-height: $font-size-base * $line-height-base * $check-size-md;
+        padding-left: ($custom-switch-width + $custom-control-gutter)*$check-size-md;
+
+        .ui-check-element__label {
+            min-height: $font-size-base * $line-height-base * $check-size-md;
+
+            &:before {
+                width: $custom-control-indicator-size * 1.75 * $check-size-md;
+                height: $custom-control-indicator-size * $check-size-md;
+                top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 * $check-size-md;
+                left: -($custom-switch-width + $custom-control-gutter)*$check-size-md;
+                border-radius: $custom-switch-indicator-border-radius * $check-size-md;
+            }
+
+            &:after {
+                width: calc((#{$custom-control-indicator-size} - #{$custom-control-indicator-border-width * 4}) * #{$check-size-md});
+                height: calc((#{$custom-control-indicator-size} - #{$custom-control-indicator-border-width * 4}) * #{$check-size-md});
+                top: calc((#{(($font-size-base * $line-height-base - $custom-control-indicator-size) / 2)} + #{$custom-control-indicator-border-width * 2}) * #{$check-size-md});
+                left: calc((#{-($custom-switch-width + $custom-control-gutter)} + #{$custom-control-indicator-border-width * 2}) * #{$check-size-md});
+                background-size: 70%;
+            }
+        }
+
+        .ui-check-element__input {
+            &:checked + .ui-check-element__label::after {
+                transform: translateX(($custom-switch-width - $custom-control-indicator-size)* $check-size-md);
+                background: $accent;
+            }
+        }
+    }
+
+    .ui-check-element__input {
+        &:checked + .ui-check-element__label::after {
+            transform: translateX($custom-switch-width - $custom-control-indicator-size);
+            background: $accent;
+        }
+    }
+
+    .ui-check-element__label {
+
+        &:before {
+            left: -($custom-switch-width + $custom-control-gutter);
+            width: $custom-switch-width;
+            border-radius: $custom-switch-indicator-border-radius;
+        }
+
+        &:after {
+            top: calc(#{(($font-size-base * $line-height-base - $custom-control-indicator-size) / 2)} + #{$custom-control-indicator-border-width * 2});
+            left: calc(#{-($custom-switch-width + $custom-control-gutter)} + #{$custom-control-indicator-border-width * 2});
+            width: $custom-switch-indicator-size;
+            height: $custom-switch-indicator-size;
+            border-radius: $custom-switch-indicator-border-radius;
+            background: $gray-400;
+        }
+    }
+
+}
+
+.ui-block-radio {
+    display: flex;
+    flex-direction: column;
+
+    &_md {
+        .ui-block-radio__element {
+            min-height: $font-size-base * $line-height-base * $check-size-md;
+            padding-left: ($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+
+            .ui-check-element__label {
+                min-height: $font-size-base * $line-height-base * $check-size-md;
+
+                &::before {
+                    width: $custom-control-indicator-size * $check-size-md;
+                    height: $custom-control-indicator-size * $check-size-md;
+                    top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 * $check-size-md;
+                    left: -($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+                }
+
+                &::after {
+                    width: $custom-control-indicator-size * $check-size-md;
+                    height: $custom-control-indicator-size *$check-size-md;
+                    top: ($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 * $check-size-md;
+                    left: -($custom-control-gutter + $custom-control-indicator-size)*$check-size-md;
+                }
+            }
+        }
+    }
+
+    &__element {
+
+        .ui-check-element__label {
+
+            &:before {
+                border-radius: 50%;
+            }
+
+            &:after {
+                border-radius: 50%;
+                background: $accent;
+                transform: scale(0);
+            }
+        }
+
+        .ui-check-element__input {
+            &:checked + .ui-check-element__label:after {
+                transform: scale(0.55);
+            }
+        }
+    }
+}

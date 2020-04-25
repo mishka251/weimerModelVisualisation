@@ -1,8 +1,7 @@
 import $ from "jquery";
 
-import {isolines, MultiLineString, Point, Polygon} from "@turf/turf";
-import {FeatureCollection, point, feature, featureCollection} from '@turf/helpers'
-import {Feature} from "@turf/turf"
+import {Point, Polygon, Feature} from "@turf/turf";
+import {FeatureCollection, point, featureCollection} from '@turf/helpers'
 import tin from "@turf/tin";
 
 export interface AuroraPoint {
@@ -25,14 +24,12 @@ interface IServerResponse {
 }
 
 export default class AuroraPointsModel {
-    public points: AuroraPoint[];
     public time: Date;
     public url: string;
 
     public max: number;
     public min: number;
 
-    public isolines: FeatureCollection<MultiLineString>;
     public tins: FeatureCollection<Polygon>;
 
     public type: string;
@@ -41,53 +38,44 @@ export default class AuroraPointsModel {
         this.url = url;
     }
 
-    loadPoints(type: string): Promise<void> {
-
+    loadPoints(type: string, date:string): Promise<void> {
+        console.log("load start");
+        //@ts-ignore
+        console.timeLog("time");
         return new Promise<void>((resolve, reject) => {
             $.ajax({
                 url: this.url,
                 data: {
-                    type: type
+                    type: type,
+                    date:date,
                 },
                 success: (result: IServerResponse) => {
                     console.log("success");
-                    this.points = [];
+                    //@ts-ignore
+                    console.timeLog("time");
+                    //this.points = [];
                     this.min = result.min;
                     this.max = result.max;
                     this.type = type;
 
                     this.time = new Date(Date.parse(result.time));
                     console.log(this.time);
-                    for (const point of result.points) {
-                        this.points.push({
-                            latitude: point.lat,
-                            longitude: point.lng,
-                            value: point.val
-                        });
-                    }
+
 
                     interface MyProps {
                         value: number;
                     }
 
-                    const featurePoints: Feature<Point, MyProps>[] = this.points.map<Feature<Point, MyProps>>((my_point: AuroraPoint) => {
-                        return point<MyProps>([my_point.longitude, my_point.latitude], {value: my_point.value});
-                    });
+                    const featurePoints: Feature<Point, MyProps>[] =
+                        result.points.map<Feature<Point, MyProps>>((_point: IServerValue) => {
+                            return point<MyProps>([_point.lng, _point.lat], {value: _point.val});
+                        });
 
                     const collection: FeatureCollection<Point, MyProps> = featureCollection<Point, MyProps>(featurePoints);
-                    //TODO сделать range генератор для этого
-                    const breaks: number[] = [];// [-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45];
-                    for (let i = -15; i <= 15; i += 0.5) {
-                        breaks.push(i);
-                    }
 
-                    this.isolines = isolines(collection, breaks, {zProperty: 'value'});
+
                     this.tins = tin(collection, 'value');
 
-
-                    this.points = this.points.filter((point) => {
-                        return point.value != null;
-                    });
 
                     this.tins.features = this.tins.features.filter((feature) => {
                         return Object.values(feature.properties).every((value) => {
@@ -95,7 +83,9 @@ export default class AuroraPointsModel {
                         });
                     });
 
-
+                    console.log("after TIN");
+                    //@ts-ignore
+                    console.timeLog("time");
                     resolve();
                 },
                 error: (jqXHR, textStatus, errorThrown) => {

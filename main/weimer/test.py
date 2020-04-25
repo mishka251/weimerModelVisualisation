@@ -3,6 +3,7 @@ import os
 from .w05sc import Calculator
 from typing import List, Tuple
 from .constants import Constants, ConstantsStatic, ConstantsTaken
+from datetime import datetime
 
 file_path = os.path.join('main', 'weimer', 'input_data')
 
@@ -21,11 +22,12 @@ class AuroraCalculator(object):
         self.nlon = len(self.longitudes)
         self.nlat = len(self.latitudes)
 
-    def calc_epot(self) -> Tuple:
+    def calc_epot(self, date: datetime = datetime.now()) -> Tuple[
+        int, int, List[float], List[float], np.ndarray, datetime]:
 
         epot = np.zeros((self.nlon, self.nlat), np.float)
         calc = Calculator()
-        consts: ConstantsTaken = ConstantsTaken()
+        consts: ConstantsTaken = ConstantsTaken(date)
         calc.setmodel(consts.by, consts.bz, consts.tilt, consts.swvel, consts.swden, file_path, 'epot')
         mlt = [lon / 15 for lon in self.longitudes]
         for i in range(self.nlon):
@@ -34,11 +36,12 @@ class AuroraCalculator(object):
 
         return self.nlon, self.nlat, self.longitudes, self.latitudes, epot, consts.time
 
-    def calc_mpfac(self) -> Tuple:
+    def calc_mpfac(self, date: datetime = datetime.now()) -> Tuple[
+        int, int, List[float], List[float], np.ndarray, datetime]:
 
         mpfac = np.zeros((self.nlon, self.nlat), np.float)
         calc = Calculator()
-        consts: ConstantsTaken = ConstantsTaken()
+        consts: ConstantsTaken = ConstantsTaken(date)
         calc.setmodel(consts.by, consts.bz, consts.tilt, consts.swvel, consts.swden, file_path, 'bpot')
         mlt = [lon / 15 for lon in self.longitudes]
         for i in range(self.nlon):

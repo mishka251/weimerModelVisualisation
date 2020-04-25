@@ -41,13 +41,17 @@ module.exports = {
             {
                 test: /\.scss$/,
                 loaders: [
+                    'vue-style-loader',
                     'style-loader',
                     'css-loader',
-                    'resolve-url-loader',
+                    {loader: 'resolve-url-loader', options: {"removeCR": true}},
                     {
-                        loader: 'sass-loader?indentedSyntax=false',
+                        loader: 'sass-loader',
                         options: {
-                            sourceMap: true
+                            sourceMap: true,
+                            sassOptions: {
+                                includePaths: [path.resolve("node_modules")],
+                            }
                         },
                     },
                 ],

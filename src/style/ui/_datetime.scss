@@ -1,0 +1,155 @@
+.ui-simple-input__control:focus ~ .date-picker {
+  display: block;
+}
+
+$calendar-size-xs: 240px;
+$calendar-size-sm: 280px;
+$calendar-size-md: 320px;
+
+$height-aspect-ratio: 0.85;
+
+.datetime-group {
+  display: flex;
+  flex-direction: column;
+
+  &_required {
+    .datetime-group__label {
+      font-weight: bold;
+    }
+  }
+
+  &__label {
+    color: $black;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  &__control-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__divider {
+    min-width: 2px;
+    border-right: 1px dashed $black;
+    margin: 0 1rem;
+  }
+}
+
+
+.date-picker {
+  display: block;
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 0;
+  @include p(1);
+  border: 1px solid $gray-400;
+  background: #fff;
+
+  @include media-breakpoint-down(sm) {
+    .date-picker__day-selection {
+      width: $calendar-size-sm;
+      height: calc(#{$calendar-size-sm} * #{$height-aspect-ratio});
+    }
+    .date-picker__month-selection {
+      width: $calendar-size-sm !important;
+    }
+  }
+  @include media-breakpoint-down(xs) {
+    .date-picker__day-selection {
+      width: $calendar-size-xs;
+      height: calc(#{$calendar-size-xs} * #{$height-aspect-ratio});
+    }
+    .date-picker__month-selection {
+      width: $calendar-size-xs !important;
+    }
+  }
+
+  &__day-selection {
+    width: $calendar-size-md;
+    height: calc(#{$calendar-size-md} * #{$height-aspect-ratio});
+    text-align: center;
+  }
+
+  &__weekdays {
+
+    .date-picker__day {
+      cursor: pointer;
+      border-radius: 50%;
+
+      &:hover {
+        background: #d6dfe7;
+      }
+    }
+
+    .date-picker__day_active {
+      @extend .date-picker__day;
+      background: $accent;
+      color: $white;
+    }
+
+    .date-picker__day_disable {
+      @extend .date-picker__day;
+      color: $gray-300;
+    }
+
+    .date-picker__day_off {
+      @extend .date-picker__day;
+      font-weight: bold;
+    }
+
+  }
+
+  .date-picker__month-selection {
+    @include px(2);
+    @include py(1);
+
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+  }
+
+  &__change-month {
+    @extend .btn;
+    @extend .btn-sm;
+    @extend .btn-outline-gray-400;
+  }
+
+  &__weekday-names {
+    color: $icon-color;
+    border-bottom: 1px dashed $gray-200;
+  }
+
+  &__shortcuts {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.ui-datepicker {
+  @extend .ui-simple-input;
+
+  &__icon {
+    display: inline-block;
+    vertical-align: middle;
+    height: 16px;
+    min-width: 16px;
+    overflow: hidden;
+    background: $icon-color url(../img/icon-calendar.svg) no-repeat 0 0;
+    user-select: unset;
+  }
+}
+
+.ui-timepicker {
+  @extend .ui-simple-input;
+
+  &__icon {
+    font-size: $font-size-base;
+    text-decoration: none !important;
+    color: $icon-color;
+    min-width: 16px;
+    user-select: unset;
+  }
+}
+

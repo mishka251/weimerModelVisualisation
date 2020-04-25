@@ -1,0 +1,107 @@
+.ui-simple-input {
+  display: flex;
+  flex-direction: column;
+
+
+  /* Модификаторы */
+  &_size_xs {
+    width: 150px;
+  }
+
+  &_has-text {
+    .ui-simple-input__label {
+      top: 0;
+      font-size: 14px;
+      color: black;
+    }
+  }
+
+  &_required {
+    .ui-simple-input__label {
+      font-weight: bold;
+    }
+  }
+
+  /* Элементы */
+  &__control-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__control {
+    flex-grow: 1;
+    width: 100%;
+    outline: none;
+    background-color: transparent;
+    display: block;
+    border: none;
+    border-bottom: 1px solid $gray-400;
+    font-size: 16px;
+    padding-top: 1.5rem;
+    box-shadow: 0 1px 0 0 transparent;
+
+    &:focus {
+      border-bottom-color: $accent;
+      border-bottom-width: 1px;
+      background-color: inherit;
+      box-shadow: 0 1px 0 0 $accent;
+    }
+
+    &:focus + .ui-simple-input__label {
+      top: 0;
+      font-size: 14px;
+      opacity: 1;
+      color: $accent;
+    }
+
+    &:focus ~ .ui-simple-input__btn {
+      border-bottom-color: $accent;
+      box-shadow: 0 1px 0 0 $accent;
+    }
+  }
+
+  &__label {
+    width:100%;
+    overflow: hidden;
+    white-space: nowrap;
+    color: $gray-600;
+    font-size: 16px;
+    position: absolute;
+    pointer-events: none;
+    top: 23px;
+    left: 0;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+    z-index: 1;
+  }
+
+  &__helper {
+    font-size: 10px;
+    color: $icon-color;
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+  }
+
+  &__btn {
+    @extend .btn;
+    @include py(1);
+    @include px(2);
+
+    display: flex;
+    align-self: flex-end;
+    border-bottom-color: $gray-400;
+    transition: 0s color;
+
+    &:focus {
+      border-color: $accent;
+    }
+
+  }
+}

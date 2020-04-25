@@ -1,0 +1,116 @@
+@import '~bootstrap/scss/functions';
+
+$card-border-width: 0;
+$card-border-radius: 0;
+$card-spacer-y: .5rem;
+$card-spacer-x: .5rem;
+
+$blue: #0084F4;
+$green: #00c48c;
+$yellow: #ffcf5c;
+$pink: #ff647c;
+
+$accent: #158fe7;
+
+$gray-100: #f7fafc;
+$gray-200: #E4EAED;
+$gray-300: #D5DFE4;
+$gray-400: #C2CFE0;
+$gray-500: #adb5bd; //из палитры bootstrap
+$gray-600: #6c757d; //из палитры bootstrap
+
+$blue-100: #a1d2f5;
+$green-100: #99e7d1;
+$yellow-100: #ffecbe;
+$pink-100: #ffc1cb;
+
+$icon-color: darkgrey;
+$breadcrumb-active-color: #306185;
+
+$colors: (
+        'accent': $accent,
+        'blue': $blue,
+        'green': $green,
+        'yellow': $yellow,
+        'pink': $pink,
+);
+
+$primary: $accent;
+$success: $green;
+
+$warning: $yellow;
+$danger: $pink;
+$info: $blue;
+
+$theme-colors: (
+        'primary': $primary,
+        'success': $success,
+        'warning': $warning,
+        'danger': $danger,
+        'info': $info,
+        'gray-300': $gray-300,
+);
+
+$btn-border-radius: 0;
+$btn-border-radius-lg: 0;
+$btn-border-radius-sm: 0;
+
+$input-btn-focus-box-shadow: none;
+$btn-focus-box-shadow: none;
+
+// need by variables
+@import '~bootstrap/scss/variables';
+
+@import '~bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap-grid.scss';
+
+.btn {
+    cursor: pointer;
+}
+
+.btn-outline-gray-400 {
+    @include button-outline-variant($gray-400)
+}
+
+.btn-group {
+    display: flex;
+    align-items: center;
+
+    .btn-group__item {
+        &:not(:first-child) {
+            padding-left: 0.5rem;
+        }
+
+        &:not(:last-child) {
+            padding-right: 0.5rem;
+        }
+    }
+
+    &-vertical {
+        .btn-group__item {
+            &:not(:first-child) {
+                padding-top: 0.5rem;
+            }
+
+            &:not(:last-child) {
+                padding-bottom: 0.5rem;
+            }
+        }
+    }
+}
+
+.alert-info {
+    background-color: $blue-100;
+}
+
+.alert-success {
+    background-color: $green-100;
+}
+
+.alert-warning {
+    background-color: $yellow-100;
+}
+
+.alert-danger {
+    background-color: $pink-100;
+}

@@ -19,6 +19,6 @@ from main.views import index, get_matr
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("points", get_matr),
+    path("points/", get_matr),
     path('', index)
 ]

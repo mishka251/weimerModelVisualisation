@@ -5,8 +5,8 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>Geomagnet</title>
-{#    {% load render_bundle from webpack_loader %}#}
+    <title>Auroral calculator</title>
+    {#    {% load render_bundle from webpack_loader %}#}
 
     <meta name="description" content=""/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -16,52 +16,55 @@
     />
 
     <script src=" {% static 'dist/main.js' %}"></script>
-    <link rel="stylesheet" href="{% static "libs/bootstrap/bootstrap-grid-3.3.1.min.css" %}"/>
     <link rel="stylesheet" href="{% static "css/weimer_main.css" %}"/>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css"/>
-    <link href="{% static "libs/switch/switch.css" %}" rel="stylesheet"/>
 </head>
 <body>
 
 {#{% render_bundle 'main' %}#}
-
+<div id="vue-root"></div>
 <div class="container-fluid">
-    <div id="map" class="map">
-        <div id="LocateButton" class="wow bounceInRight animated"></div>
-    </div>
-    <div class="row">
-        <div id="menu_map" class="col-md-3"
-             style="right:0px;max-width: 280px; min-width:100px; z-index:6; background-color: #d8d8d8; padding-top:5px;padding-bottom:45px;opacity:0.87;">
-            <div style="width:90%;display:inline-block;color:green;text-align:center;" class="wow zoomIn animated">
-                Geomagnetic Calculator
-            </div>
-
-            <div style="padding-top: 25px">
-                <span class="simple-text">Isolines</span>
-                <table>
-                    <tr>
-                        <td>
-                            <label for="rb_epot">
-                                Epot
-                            </label>
-
-                            <input id="rb_epot" type="radio" value="epot" name="type" checked
-                                   style=" width: 14px; height:14px ; display: table-cell; text-align: center;  vertical-align: middle;">
-                        </td>
-
-                        <td>
-                            <label for="rb_mpfac">MPfac</label>
-                            <input id="rb_mpfac" type="radio" value="mpfac" name="type"
-                                   style="width: 14px; height:14px ; display: table-cell;  text-align: center;  vertical-align: middle;">
-                        </td>
-                    </tr>
-                </table>
-                <div id="sliderDiv"></div>
-            </div>
-        </div>
-    </div>
+    {#    <div id="map" class="map">#}
+    {#        <div id="LocateButton" class="wow bounceInRight animated"></div>#}
+    {#    </div>#}
+    {#    <div class="row">#}
+    {#        <div id="menu_map" class="col-md-3"#}
+    {#             style="right:0px;max-width: 280px; min-width:100px; z-index:6; background-color: #d8d8d8; padding-top:5px;padding-bottom:45px;opacity:0.87;">#}
+    {#            <div style="width:90%;display:inline-block;color:green;text-align:center;" class="wow zoomIn animated">#}
+    {#                Geomagnetic Calculator#}
+    {#            </div>#}
+    {##}
+    {#            <div style="padding-top: 25px">#}
+    {#                <span class="simple-text">Isolines</span>#}
+    {#                <table>#}
+    {#                    <tr>#}
+    {#                        <td>#}
+    {#                            <label for="rb_epot">#}
+    {#                                Epot#}
+    {#                            </label>#}
+    {##}
+    {#                            <input id="rb_epot" type="radio" value="epot" name="type" checked#}
+    {#                                   style=" width: 14px; height:14px ; display: table-cell; text-align: center;  vertical-align: middle;">#}
+    {#                        </td>#}
+    {##}
+    {#                        <td>#}
+    {#                            <label for="rb_mpfac">MPfac</label>#}
+    {#                            <input id="rb_mpfac" type="radio" value="mpfac" name="type"#}
+    {#                                   style="width: 14px; height:14px ; display: table-cell;  text-align: center;  vertical-align: middle;">#}
+    {#                        </td>#}
+    {#                    </tr>#}
+    {#                </table>#}
+    {##}
+    {#                <label for="date-input">Date</label>#}
+    {#                <input type="text" id="date-input">#}
+    {##}
+    {#                 <label for="time-input">Time</label>#}
+    {#                <input type="time" id="time-input">#}
+    {##}
+    {#                <div id="sliderDiv"></div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
 
 </div>
 </body>
