@@ -9,6 +9,5 @@ export default class ColorBar extends Vue {
     colors: Color[];
     breaks: number[];
     get colorItems(): ColorInfo[];
-    toARGB(color: Color): string;
 }
 export {};

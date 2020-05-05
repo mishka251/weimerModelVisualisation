@@ -9,11 +9,11 @@
 
         <div id="menu_map" class="col-md-3">
             <div class="menu_map-header wow zoomIn animated">
-                Aurora forecast
+                Weimer model
             </div>
 
             <RadioButtonsField
-                    label="value type"
+                    label="parameter"
                     id="type"
                     :value.sync="type"
                     :possible-values="possibleTypes"
@@ -84,6 +84,7 @@
     import {Exclusion} from "tslint/lib/rules/completed-docs/exclusion";
     import {debounce} from 'lodash';
     import ProgressBar from "./Preloader/ProgressBar.vue";
+    import {format} from 'date-fns';
 
     export interface AuroraPoint {
         latitude: number;
@@ -121,8 +122,8 @@
     })
     export default class Root extends Vue {
         possibleTypes: IItem[] = [
-            {id: '1', caption: 'epot'},
-            {id: '2', caption: "mpfac"},
+            {id: 'epot', caption: 'epot(V)'},
+            {id: 'mpfac', caption: 'mpfac(A/m^2)'},
         ];
         type: IItem = this.possibleTypes[0];
 
@@ -138,10 +139,10 @@
 
         // colors: any = [];
         get breaks(): number[] {
-            if (this.type.caption == 'epot') {
+            if (this.type.id == 'epot') {
                 return this.epotBreaks;
             }
-            if (this.type.caption == 'mpfac') {
+            if (this.type.id == 'mpfac') {
                 return this.mpfacBreaks;
             }
             throw new Error('unknown type');
@@ -150,8 +151,9 @@
         url: string = '/points/';
 
         readonly colors: Color[] = [
-            new Color([225, 0, 225, 0.9]),
-            new Color([0, 0, 255, 0.8]),
+            new Color([0, 0, 180, 1]),
+            new Color([0, 36, 255, 0.9]),
+            new Color([0, 165, 255, 0.8]),
             new Color([0, 255, 255, 0.6]),
             new Color([0, 255, 0, 0.4]),
             new Color([0, 255, 0, 0.2]),
@@ -160,32 +162,37 @@
             new Color([0, 255, 0, 0.4]),
             new Color([255, 255, 0, 0.6]),
             new Color([255, 165, 0, 0.8]),
-            new Color([255, 36, 0, 0.9])
+            new Color([255, 36, 0, 0.9]),
+            new Color([180, 0, 0, 1]),
         ].reverse();
         readonly epotBreaks = [
-            -100,
             -30,
+            -20,
             -10,
             -5,
+            -3,
             -1,
             1,
+            3,
             5,
             10,
+            20,
             30,
-            100
         ].reverse();
 
         readonly mpfacBreaks = [
-            -3,
             -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
             -0.1,
             -0.05,
-            -0.01,
-            0.01,
             0.05,
             0.1,
-            0.5,
-            3
+            0.2,
+            0.3,
+            0.4,
+            0.5
         ].reverse();
 
         points: FeatureCollection<Polygon> = null;
@@ -210,8 +217,8 @@
             this.points = null;
             return axios.get(this.url, {
                 params: {
-                    type: this.type.caption,
-                    date: this.dateTime,
+                    type: this.type.id,
+                    date: format( this.dateTime, `yyyy-MM-dd'T'HH:mm:ss`),
                 }
             })
                 .then<void>((response: AxiosResponse<IServerResponse>) => {

@@ -17,7 +17,7 @@
                     <TimeInput
                             :value.sync="_value"
                             :id="id+'_time'"
-                            label="Time(local)"
+                            label="Time"
                     ></TimeInput>
                 </div>
             </div>

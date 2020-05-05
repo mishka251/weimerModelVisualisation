@@ -1,7 +1,7 @@
 const path = require('path');
 const ArcGISPlugin = require("@arcgis/webpack-plugin");
-var webpack = require('webpack');
-var BundleTracker = require('webpack-bundle-tracker');
+const webpack = require('webpack');
+const BundleTracker = require('webpack-bundle-tracker');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
