@@ -17,7 +17,7 @@ class AuroraCalculator(object):
     nlat: int
 
     def __init__(self):
-        self.latitudes = list(np.arange(-90, 90 + 1, 1, dtype=np.float))
+        self.latitudes = list(np.arange(30, 90 + 1, 1, dtype=np.float))
         self.longitudes = list(np.arange(0, 360 + 1, 2.5, dtype=np.float))
         self.nlon = len(self.longitudes)
         self.nlat = len(self.latitudes)
@@ -27,7 +27,10 @@ class AuroraCalculator(object):
 
         epot = np.zeros((self.nlon, self.nlat), np.float)
         calc = Calculator()
-        consts: ConstantsTaken = ConstantsTaken(date)
+        try:
+            consts: ConstantsTaken = ConstantsTaken(date)
+        except Exception as e:
+            raise Exception('no data for date '+str(date))
         calc.setmodel(consts.by, consts.bz, consts.tilt, consts.swvel, consts.swden, file_path, 'epot')
         mlt = [lon / 15 for lon in self.longitudes]
         for i in range(self.nlon):

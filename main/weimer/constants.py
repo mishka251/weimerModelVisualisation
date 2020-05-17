@@ -2,10 +2,12 @@ from urllib.error import URLError
 from urllib.request import urlopen
 import json
 from http.client import HTTPResponse
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from datetime import datetime, timedelta
 from math import atan2, degrees, sqrt
 import numpy
+from django.utils import timezone
+from main.models import WeimerModelConstants
 
 unpossible_values = [9999.99, 999999, 999.99, 99999.9, 999.999]
 
@@ -62,7 +64,7 @@ class MagInfo(object):
     # lat: float
     bt: float
 
-    angle: float
+    # angle: float
 
     def __init__(self, bx: float, by: float, bz: float, bt: float):
         self.bx = bx  # float(items[1])
@@ -72,7 +74,7 @@ class MagInfo(object):
         # self.lat = float(items[5])
         self.bt = bt  # float(items[6])
 
-        self.angle: float = degrees(atan2(self.by, self.bz))  # градусы
+        # self.angle: float = degrees(atan2(self.by, self.bz))  # градусы
 
     @property
     def valid(self):
@@ -129,7 +131,52 @@ def get_json_from_url(url: str):
     return json.loads(data.decode(encoding))
 
 
-def read_asc_1min(url: str):
+def get_from_noaa(date: datetime) -> Tuple[float, float, float, float]:
+    base_url: str = "https://services.swpc.noaa.gov/products/solar-wind/"
+    mag_file: str = "mag-7-day.json"
+    plasma_file: str = "plasma-7-day.json"
+    try:
+        mag2: List[List[str]] = get_json_from_url(base_url + mag_file)
+        plasma2: List[List[str]] = get_json_from_url(base_url + plasma_file)
+    except URLError as e:
+        raise Exception("Не удалось получить данные с сайта NOAA", e)
+        # return None
+
+    plasma_format: List[str] = ['time_tag', 'density', 'speed', 'temperature']
+    mag_format: List[str] = ['time_tag', 'bx_gsm', 'by_gsm', 'bz_gsm', 'lon_gsm', 'lat_gsm', 'bt']
+    #
+    assert mag2[0] == mag_format, "Неверный формат файла mag"
+    assert plasma2[0] == plasma_format, "Неверный формаьт фалйа plasma"
+
+    del mag2[0]
+    del plasma2[0]
+
+    plasma_by_time: Dict[datetime, PlasmaInfo] = {}
+    #
+    datetime_format = "%Y-%m-%d %H:%M:%S.%f"
+    for plasma_item in plasma2:
+        if all(plasma_item):
+            dat = datetime.strptime(plasma_item[0], datetime_format)
+            dat = datetime(dat.year, dat.month, dat.day, dat.hour, dat.minute, dat.second, tzinfo=timezone.utc)
+            plasma_by_time.update({dat: PlasmaInfo(float(plasma_item[2]), float(plasma_item[1]))})
+
+    mag_by_time: Dict[datetime, MagInfo] = {}
+
+    for mag_item in mag2:
+        if all(mag_item):
+            dat = datetime.strptime(mag_item[0], datetime_format)
+            dat = datetime(dat.year, dat.month, dat.day, dat.hour, dat.minute, dat.second, tzinfo=timezone.utc)
+            mag_by_time.update(
+                {dat: MagInfo(float(mag_item[1]), float(mag_item[2]), float(mag_item[3]), float(mag_item[6]))})
+
+    if date in mag_by_time and date in plasma_by_time:
+        return plasma_by_time[date].density, plasma_by_time[date].speed, mag_by_time[date].by, mag_by_time[date].bz
+        # Info(mag_by_time[date], plasma_by_time[date])
+
+    raise Exception("Нет данных")
+
+
+def read_asc_1min(url: str) -> Dict[datetime, Info]:
     response: HTTPResponse = urlopen(url)
     encoding: str = response.info().get_content_charset('utf-8')
     file: str = response.read().decode(encoding)
@@ -154,8 +201,8 @@ def read_asc_1min(url: str):
 
         # lat = float()
 
-        date = datetime(year, 1, 1, hour, minute)
-        date += timedelta(day)
+        date = timezone.datetime(year, 1, 1, hour, minute, tzinfo=timezone.utc)
+        date += timedelta(day - 1)
         mag = MagInfo(bx, by, bz, bt)
         plasma = PlasmaInfo(speed, density)
 
@@ -175,70 +222,119 @@ class ConstantsTaken(Constants):
     tilt: float = 0
     time: datetime = None
 
+    def get_db_values(self, date: datetime) -> Tuple[float, float, float, float]:
+        obj: WeimerModelConstants = WeimerModelConstants.objects.get(datetime=date)
+        return obj.plasma_density, obj.plasma_speed, obj.magnetic_by, obj.magnetic_bz
+
+    # def get_foreign_data(self, date: datetime):
+    #     url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{date.strftime('%Y%m')}.asc"
+    #     try:
+    #         dates = read_asc_1min(url)
+    #     except URLError:
+    #         dates = {}
+    #     if date in dates:
+    #         val = dates[date]
+    #         return val.plasma.density, val.plasma.speed, val.magnetic.by, val.magnetic.bz
+    #     raise Exception('no data')
+
     def __init__(self, date: datetime = datetime.now()):
-        base_url: str = "https://services.swpc.noaa.gov/products/solar-wind/"
-        mag_file: str = "mag-7-day.json"
-        plasma_file: str = "plasma-7-day.json"
-
-        url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{date.strftime('%Y%m')}.asc"
         try:
-            dates = read_asc_1min(url)
-        except URLError:
-            dates = {}
+            self.swden, self.swvel, self.by, self.bz = self.get_db_values(date)
+            #     # =obj.plasma_speed
+            #     # self.swden=obj.plasma_density
+            #     # =obj.magnetic_by
+            #     # =obj.magnetic_bz
+            print('get db ok')
+            return
+        except WeimerModelConstants.DoesNotExist as e:
+            print(e)
 
-        mag2: List[List[str]] = get_json_from_url(base_url + mag_file)
-        plasma2: List[List[str]] = get_json_from_url(base_url + plasma_file)
+        try:
+            self.swden, self.swvel, self.by, self.bz = get_from_noaa(date)  # self.get_foreign_data(date)
+            print('get remote ok')
+            return
+        except Exception as e:
+            print(e)
+            foreign_data = None
+        raise Exception('no data for this datetime')
+
+        # if db_data != foreign_data:
+        #     print(f'ERROR! разные данные db={db_data} foreign={foreign_data} data = {date}')
+        # try:
+        #     pass
+        #     # obj= WeimerModelConstants.objects.get(datetime=date)
+        #     # self.swvel=obj.plasma_speed
+        #     # self.swden=obj.plasma_density
+        #     # self.by=obj.magnetic_by
+        #     # self.bz=obj.magnetic_bz
+        #     # return
+        # except WeimerModelConstants.DoesNotExist as e:
+        #     print('no date in db')
+        #     pass
+
+        # base_url: str = "https://services.swpc.noaa.gov/products/solar-wind/"
+        # mag_file: str = "mag-7-day.json"
+        # plasma_file: str = "plasma-7-day.json"
         #
-        plasma_format: List[str] = ['time_tag', 'density', 'speed', 'temperature']
-        mag_format: List[str] = ['time_tag', 'bx_gsm', 'by_gsm', 'bz_gsm', 'lon_gsm', 'lat_gsm', 'bt']
+        # url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{date.strftime('%Y%m')}.asc"
+        # try:
+        #     dates = read_asc_1min(url)
+        # except URLError:
+        #     dates = {}
         #
-        assert mag2[0] == mag_format, "Неверный формат файла mag"
-        assert plasma2[0] == plasma_format, "Неверный формаьт фалйа plasma"
+        # mag2: List[List[str]] = get_json_from_url(base_url + mag_file)
+        # plasma2: List[List[str]] = get_json_from_url(base_url + plasma_file)
+        # #
+        # plasma_format: List[str] = ['time_tag', 'density', 'speed', 'temperature']
+        # mag_format: List[str] = ['time_tag', 'bx_gsm', 'by_gsm', 'bz_gsm', 'lon_gsm', 'lat_gsm', 'bt']
+        # #
+        # assert mag2[0] == mag_format, "Неверный формат файла mag"
+        # assert plasma2[0] == plasma_format, "Неверный формаьт фалйа plasma"
+        # #
+        # del mag2[0]
+        # del plasma2[0]
+        # #
+        # plasma_by_time: Dict[datetime, PlasmaInfo] = {}
+        # #
+        # datetime_format = "%Y-%m-%d %H:%M:%S.%f"
+        # for plasma_item in plasma2:
+        #     if all(plasma_item):
+        #         dat = datetime.strptime(plasma_item[0], datetime_format)
+        #         plasma_by_time.update({dat: PlasmaInfo(float(plasma_item[2]), float(plasma_item[1]))})
         #
-        del mag2[0]
-        del plasma2[0]
+        # mag_by_time: Dict[datetime, MagInfo] = {}
         #
-        plasma_by_time: Dict[datetime, PlasmaInfo] = {}
+        # for mag_item in mag2:
+        #     if all(mag_item):
+        #         dat = datetime.strptime(mag_item[0], datetime_format)
+        #         mag_by_time.update(
+        #             {dat: MagInfo(float(mag_item[1]), float(mag_item[2]), float(mag_item[3]), float(mag_item[6]))})
         #
-        datetime_format = "%Y-%m-%d %H:%M:%S.%f"
-        for plasma_item in plasma2:
-            if all(plasma_item):
-                dat = datetime.strptime(plasma_item[0], datetime_format)
-                plasma_by_time.update({dat: PlasmaInfo(float(plasma_item[2]), float(plasma_item[1]))})
+        # # plasma_times = set(plasma_by_time.keys())
+        # # mag_times = set(mag_by_time.keys())
+        # # times = plasma_times & mag_times
+        #
+        # # last_time2 = max(times)
+        # # last_mag2 = mag_by_time[last_time2]
+        # # last_plasma2 = plasma_by_time[last_time2]
+        # # day = min(dates.keys(), key=lambda day: abs( (date - day)))
+        #
+        # # last_mag = dates[day].magnetic
+        # # last_plasma = dates[day].plasma
+        # if date in mag_by_time and date in plasma_by_time:
+        #     mag = mag_by_time[date]
+        #     plasma = plasma_by_time[date]
+        # elif date in dates:
+        #     mag = dates[date].magnetic
+        #     plasma = dates[date].plasma
+        # else:
+        #     raise ValueError('No data for this datetime')
 
-        mag_by_time: Dict[datetime, MagInfo] = {}
-
-        for mag_item in mag2:
-            if all(mag_item):
-                dat = datetime.strptime(mag_item[0], datetime_format)
-                mag_by_time.update(
-                    {dat: MagInfo(float(mag_item[1]), float(mag_item[2]), float(mag_item[3]), float(mag_item[6]))})
-
-        # plasma_times = set(plasma_by_time.keys())
-        # mag_times = set(mag_by_time.keys())
-        # times = plasma_times & mag_times
-
-        # last_time2 = max(times)
-        # last_mag2 = mag_by_time[last_time2]
-        # last_plasma2 = plasma_by_time[last_time2]
-        # day = min(dates.keys(), key=lambda day: abs( (date - day)))
-
-        # last_mag = dates[day].magnetic
-        # last_plasma = dates[day].plasma
-        if date in mag_by_time and date in plasma_by_time:
-            mag = mag_by_time[date]
-            plasma = plasma_by_time[date]
-        elif date in dates:
-            mag = dates[date].magnetic
-            plasma = dates[date].plasma
-        else:
-            raise ValueError('No data for this datetime')
-
-        self.by = mag.by
-        self.bz = mag.bz
-
-        self.swden = plasma.density
-        self.swvel = plasma.speed
-        self.time = date
+        # self.by = mag.by
+        # self.bz = mag.bz
+        #
+        # self.swden = plasma.density
+        # self.swvel = plasma.speed
+        # self.time = date
 
         # print(mag)

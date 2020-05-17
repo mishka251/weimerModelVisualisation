@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'webpack_loader',
+    'main',
+    # 'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -72,9 +73,15 @@ WSGI_APPLICATION = 'weimer.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),  # '/path/to/my.cnf',
+        },
     }
 }
 
@@ -113,6 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 import mimetypes
+
 mimetypes.add_type('text/javascript', '.js')
 
 STATIC_URL = '/static/'
@@ -132,4 +140,3 @@ STATICFILES_DIRS = (
 #         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
 #     }
 # }
-
