@@ -77,11 +77,18 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'OPTIONS': {
+    #         'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),  # '/path/to/my.cnf',
+    #     },
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),  # '/path/to/my.cnf',
-        },
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'weimer',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
     }
 }
 

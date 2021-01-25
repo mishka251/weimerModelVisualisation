@@ -14,6 +14,7 @@
     import Polygon from "esri/geometry/Polygon";
     import Color from 'esri/Color';
     import SimpleFillSymbol from "esri/symbols/SimpleFillSymbol";
+    import MyCustomSceneView from "./MyCustomSceneView";
 
     @Component
     export default class ArcgisMap extends Vue {
@@ -41,6 +42,7 @@
         @Watch('polygons')
         setLayer(){
             this.layer=this.polygonsLayer;
+            console.log(this.view);
         }
 
         get polygonsLayer(): GraphicsLayer {
@@ -147,7 +149,7 @@
 
             });
 
-            this.view = new SceneView({
+            this.view = new MyCustomSceneView({
                 container: this.$el as HTMLDivElement,
                 map: map,
                 zoom: 5,
@@ -156,9 +158,11 @@
                 alphaCompositingEnabled: true,
                 highlightOptions: {
                     fillOpacity: 0,
-                    color: "#ffffff"
+                    color: new Color("#ffffff"),
                 },
             });
+
+            console.log(this.view);
 
             this.view.ui.empty('top-left');
 

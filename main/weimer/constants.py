@@ -197,10 +197,6 @@ def read_asc_1min(url: str) -> Dict[datetime, Info]:
 
         speed = float(line[21])
         density = float(line[25])
-        # temperature = float(line[27])
-
-        # lat = float()
-
         date = timezone.datetime(year, 1, 1, hour, minute, tzinfo=timezone.utc)
         date += timedelta(day - 1)
         mag = MagInfo(bx, by, bz, bt)
@@ -209,10 +205,13 @@ def read_asc_1min(url: str) -> Dict[datetime, Info]:
         if mag.valid and plasma.valid:
             data[date] = Info(mag, plasma)
 
-        # print(line)
-
-    # print(data)
     return data
+
+
+def get_data_from_nasa(now):
+    url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{now.strftime('%Y%m')}.asc"
+    dates = read_asc_1min(url)
+    return dates[now].plasma.density, dates[now].plasma.speed, dates[now].magnetic.by, dates[now].magnetic.bz
 
 
 class ConstantsTaken(Constants):
@@ -226,115 +225,23 @@ class ConstantsTaken(Constants):
         obj: WeimerModelConstants = WeimerModelConstants.objects.get(datetime=date)
         return obj.plasma_density, obj.plasma_speed, obj.magnetic_by, obj.magnetic_bz
 
-    # def get_foreign_data(self, date: datetime):
-    #     url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{date.strftime('%Y%m')}.asc"
-    #     try:
-    #         dates = read_asc_1min(url)
-    #     except URLError:
-    #         dates = {}
-    #     if date in dates:
-    #         val = dates[date]
-    #         return val.plasma.density, val.plasma.speed, val.magnetic.by, val.magnetic.bz
-    #     raise Exception('no data')
-
     def __init__(self, date: datetime = datetime.now()):
-        try:
-            self.swden, self.swvel, self.by, self.bz = self.get_db_values(date)
-            #     # =obj.plasma_speed
-            #     # self.swden=obj.plasma_density
-            #     # =obj.magnetic_by
-            #     # =obj.magnetic_bz
-            print('get db ok')
-            return
-        except WeimerModelConstants.DoesNotExist as e:
-            print(e)
+        # try:
+        #     self.swden, self.swvel, self.by, self.bz = self.get_db_values(date)
+        #
+        #     print('get db ok')
+        #     return
+        # except WeimerModelConstants.DoesNotExist as e:
+        #     print(e)
 
         try:
-            self.swden, self.swvel, self.by, self.bz = get_from_noaa(date)  # self.get_foreign_data(date)
+            if datetime.now(tz=timezone.utc) - date < timedelta(weeks=1):
+                self.swden, self.swvel, self.by, self.bz = get_from_noaa(date)  # self.get_foreign_data(date)
+            else:
+                self.swden, self.swvel, self.by, self.bz = get_data_from_nasa(date)  # self.get_foreign_data(date)
             print('get remote ok')
             return
         except Exception as e:
             print(e)
             foreign_data = None
         raise Exception('no data for this datetime')
-
-        # if db_data != foreign_data:
-        #     print(f'ERROR! разные данные db={db_data} foreign={foreign_data} data = {date}')
-        # try:
-        #     pass
-        #     # obj= WeimerModelConstants.objects.get(datetime=date)
-        #     # self.swvel=obj.plasma_speed
-        #     # self.swden=obj.plasma_density
-        #     # self.by=obj.magnetic_by
-        #     # self.bz=obj.magnetic_bz
-        #     # return
-        # except WeimerModelConstants.DoesNotExist as e:
-        #     print('no date in db')
-        #     pass
-
-        # base_url: str = "https://services.swpc.noaa.gov/products/solar-wind/"
-        # mag_file: str = "mag-7-day.json"
-        # plasma_file: str = "plasma-7-day.json"
-        #
-        # url: str = f"https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min{date.strftime('%Y%m')}.asc"
-        # try:
-        #     dates = read_asc_1min(url)
-        # except URLError:
-        #     dates = {}
-        #
-        # mag2: List[List[str]] = get_json_from_url(base_url + mag_file)
-        # plasma2: List[List[str]] = get_json_from_url(base_url + plasma_file)
-        # #
-        # plasma_format: List[str] = ['time_tag', 'density', 'speed', 'temperature']
-        # mag_format: List[str] = ['time_tag', 'bx_gsm', 'by_gsm', 'bz_gsm', 'lon_gsm', 'lat_gsm', 'bt']
-        # #
-        # assert mag2[0] == mag_format, "Неверный формат файла mag"
-        # assert plasma2[0] == plasma_format, "Неверный формаьт фалйа plasma"
-        # #
-        # del mag2[0]
-        # del plasma2[0]
-        # #
-        # plasma_by_time: Dict[datetime, PlasmaInfo] = {}
-        # #
-        # datetime_format = "%Y-%m-%d %H:%M:%S.%f"
-        # for plasma_item in plasma2:
-        #     if all(plasma_item):
-        #         dat = datetime.strptime(plasma_item[0], datetime_format)
-        #         plasma_by_time.update({dat: PlasmaInfo(float(plasma_item[2]), float(plasma_item[1]))})
-        #
-        # mag_by_time: Dict[datetime, MagInfo] = {}
-        #
-        # for mag_item in mag2:
-        #     if all(mag_item):
-        #         dat = datetime.strptime(mag_item[0], datetime_format)
-        #         mag_by_time.update(
-        #             {dat: MagInfo(float(mag_item[1]), float(mag_item[2]), float(mag_item[3]), float(mag_item[6]))})
-        #
-        # # plasma_times = set(plasma_by_time.keys())
-        # # mag_times = set(mag_by_time.keys())
-        # # times = plasma_times & mag_times
-        #
-        # # last_time2 = max(times)
-        # # last_mag2 = mag_by_time[last_time2]
-        # # last_plasma2 = plasma_by_time[last_time2]
-        # # day = min(dates.keys(), key=lambda day: abs( (date - day)))
-        #
-        # # last_mag = dates[day].magnetic
-        # # last_plasma = dates[day].plasma
-        # if date in mag_by_time and date in plasma_by_time:
-        #     mag = mag_by_time[date]
-        #     plasma = plasma_by_time[date]
-        # elif date in dates:
-        #     mag = dates[date].magnetic
-        #     plasma = dates[date].plasma
-        # else:
-        #     raise ValueError('No data for this datetime')
-
-        # self.by = mag.by
-        # self.bz = mag.bz
-        #
-        # self.swden = plasma.density
-        # self.swvel = plasma.speed
-        # self.time = date
-
-        # print(mag)

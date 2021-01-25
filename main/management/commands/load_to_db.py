@@ -1,12 +1,14 @@
 from urllib.error import URLError
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 from main.models import WeimerModelConstants
 from main.weimer.constants import ConstantsTaken, read_asc_1min
 from datetime import datetime, timedelta
 import calendar
 from django.utils import timezone
 
+
+date_format='%Y.%m'
 
 def add_months(sourcedate, months):
     month = sourcedate.month - 1 + months
@@ -19,10 +21,28 @@ def add_months(sourcedate, months):
 class Command(BaseCommand):
     help = 'Load constants values from NASA and site'
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser:CommandParser):
+        parser.add_argument(
+            '--from',
+            action='store',
+            default='1982.01',
+            type=str,
+            help='Начиная с какой даты загружать YYYY.MM'
+        )
+        parser.add_argument(
+            '--to',
+            action='store',
+            default=timezone.datetime.now().strftime(date_format),
+            type=str,
+            help='До какой даты загружать YYYY.MM'
+        )
 
-        begin = timezone.datetime(2013, 3, 1, 0, 0, 0)
-        end = timezone.datetime(2020, 5, 1, 0, 0, 0)
+
+    def handle(self, *args, **options):
+        begin = timezone.datetime.strptime(options['from'], date_format)
+        end =timezone.datetime.strptime(options['to'], date_format)
+        #begin = timezone.datetime(2013, 3, 1, 0, 0, 0)
+        #end = timezone.datetime(2020, 5, 1, 0, 0, 0)
         now = begin
         while now <= end:
             try:

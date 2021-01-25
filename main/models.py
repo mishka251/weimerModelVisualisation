@@ -12,12 +12,3 @@ class WeimerModelConstants(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=['datetime'])]
-
-    # @property
-    # def pressure(self) -> float:
-    #     """
-    #     давление солнечного ветра?
-    #     единицы измерения? единиц/c^2 *10^??
-    #     :return:
-    #     """
-    #     return self.density * self.speed ** 2 * 1.6726e-6
